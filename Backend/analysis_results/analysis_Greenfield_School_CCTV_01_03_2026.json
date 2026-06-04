@@ -1,0 +1,1329 @@
+{
+  "date": "CCTV_01_03_2026",
+  "school": "Greenfield School",
+  "videos": [
+    {
+      "video_name": "classroom_2.mov",
+      "date": "CCTV_01_03_2026",
+      "school": "Greenfield School",
+      "total_frames_analyzed": 1,
+      "fps": 59.90196228027344,
+      "frames": [
+        {
+          "frame_idx": 0,
+          "timestamp": "2026-03-29T01:05:43.574188",
+          "persons": [
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0001",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 56,
+                "stress_level": "low",
+                "emotional_positivity": 67,
+                "emotional_stability": 87,
+                "social_confidence": 35
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 55,
+                "facial_tension": 5,
+                "eye_openness": 59,
+                "skin_tone_uniformity": 83
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 67,
+                "stress_resilience": 87,
+                "social_engagement": 56,
+                "social_confidence": 35,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 95,
+                "vitality_glow": 69
+              },
+              "overall_wellbeing": 60
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0002",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 54,
+                "stress_level": "low",
+                "emotional_positivity": 61,
+                "emotional_stability": 83,
+                "social_confidence": 30
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 48,
+                "facial_tension": 8,
+                "eye_openness": 64,
+                "skin_tone_uniformity": 58
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 61,
+                "stress_resilience": 83,
+                "social_engagement": 54,
+                "social_confidence": 30,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 92,
+                "vitality_glow": 53
+              },
+              "overall_wellbeing": 57
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0003",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 58,
+                "stress_level": "low",
+                "emotional_positivity": 67,
+                "emotional_stability": 82,
+                "social_confidence": 37
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 58,
+                "facial_tension": 12,
+                "eye_openness": 58,
+                "skin_tone_uniformity": 75
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 67,
+                "stress_resilience": 82,
+                "social_engagement": 58,
+                "social_confidence": 37,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 88,
+                "vitality_glow": 66
+              },
+              "overall_wellbeing": 59
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0004",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 62,
+                "stress_level": "low",
+                "emotional_positivity": 72,
+                "emotional_stability": 85,
+                "social_confidence": 40
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 64,
+                "facial_tension": 9,
+                "eye_openness": 61,
+                "skin_tone_uniformity": 76
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 72,
+                "stress_resilience": 85,
+                "social_engagement": 62,
+                "social_confidence": 40,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 91,
+                "vitality_glow": 70
+              },
+              "overall_wellbeing": 61
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0005",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 30,
+                "stress_level": "low",
+                "emotional_positivity": 50,
+                "emotional_stability": 83,
+                "social_confidence": 19
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 30,
+                "facial_tension": 3,
+                "eye_openness": 32,
+                "skin_tone_uniformity": 71
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 50,
+                "stress_resilience": 83,
+                "social_engagement": 30,
+                "social_confidence": 19,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 97,
+                "vitality_glow": 50
+              },
+              "overall_wellbeing": 52
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0006",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 30,
+                "stress_level": "low",
+                "emotional_positivity": 50,
+                "emotional_stability": 84,
+                "social_confidence": 19
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 30,
+                "facial_tension": 2,
+                "eye_openness": 30,
+                "skin_tone_uniformity": 67
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 50,
+                "stress_resilience": 84,
+                "social_engagement": 30,
+                "social_confidence": 19,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 98,
+                "vitality_glow": 48
+              },
+              "overall_wellbeing": 52
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0007",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 82,
+                "stress_level": "low",
+                "emotional_positivity": 86,
+                "emotional_stability": 94,
+                "social_confidence": 52
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 82,
+                "facial_tension": 3,
+                "eye_openness": 84,
+                "skin_tone_uniformity": 83
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 86,
+                "stress_resilience": 94,
+                "social_engagement": 82,
+                "social_confidence": 52,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 97,
+                "vitality_glow": 82
+              },
+              "overall_wellbeing": 69
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0008",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 45,
+                "stress_level": "low",
+                "emotional_positivity": 64,
+                "emotional_stability": 87,
+                "social_confidence": 32
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 51,
+                "facial_tension": 4,
+                "eye_openness": 38,
+                "skin_tone_uniformity": 54
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 64,
+                "stress_resilience": 87,
+                "social_engagement": 45,
+                "social_confidence": 32,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 96,
+                "vitality_glow": 52
+              },
+              "overall_wellbeing": 57
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0009",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 34,
+                "stress_level": "low",
+                "emotional_positivity": 54,
+                "emotional_stability": 86,
+                "social_confidence": 22
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 35,
+                "facial_tension": 1,
+                "eye_openness": 33,
+                "skin_tone_uniformity": 68
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 54,
+                "stress_resilience": 86,
+                "social_engagement": 34,
+                "social_confidence": 22,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 99,
+                "vitality_glow": 51
+              },
+              "overall_wellbeing": 53
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0010",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 30,
+                "stress_level": "low",
+                "emotional_positivity": 51,
+                "emotional_stability": 85,
+                "social_confidence": 19
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 31,
+                "facial_tension": 1,
+                "eye_openness": 29,
+                "skin_tone_uniformity": 70
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 51,
+                "stress_resilience": 85,
+                "social_engagement": 30,
+                "social_confidence": 19,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 99,
+                "vitality_glow": 50
+              },
+              "overall_wellbeing": 52
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0011",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 52,
+                "stress_level": "low",
+                "emotional_positivity": 63,
+                "emotional_stability": 88,
+                "social_confidence": 31
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 49,
+                "facial_tension": 2,
+                "eye_openness": 58,
+                "skin_tone_uniformity": 78
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 63,
+                "stress_resilience": 88,
+                "social_engagement": 52,
+                "social_confidence": 31,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 98,
+                "vitality_glow": 63
+              },
+              "overall_wellbeing": 58
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0012",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 43,
+                "stress_level": "low",
+                "emotional_positivity": 61,
+                "emotional_stability": 88,
+                "social_confidence": 28
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 45,
+                "facial_tension": 1,
+                "eye_openness": 42,
+                "skin_tone_uniformity": 73
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 61,
+                "stress_resilience": 88,
+                "social_engagement": 43,
+                "social_confidence": 28,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 99,
+                "vitality_glow": 59
+              },
+              "overall_wellbeing": 57
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0013",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 46,
+                "stress_level": "low",
+                "emotional_positivity": 62,
+                "emotional_stability": 87,
+                "social_confidence": 30
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 47,
+                "facial_tension": 2,
+                "eye_openness": 45,
+                "skin_tone_uniformity": 60
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 62,
+                "stress_resilience": 87,
+                "social_engagement": 46,
+                "social_confidence": 30,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 98,
+                "vitality_glow": 53
+              },
+              "overall_wellbeing": 57
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0014",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 67,
+                "stress_level": "low",
+                "emotional_positivity": 76,
+                "emotional_stability": 91,
+                "social_confidence": 42
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 67,
+                "facial_tension": 2,
+                "eye_openness": 68,
+                "skin_tone_uniformity": 88
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 76,
+                "stress_resilience": 91,
+                "social_engagement": 67,
+                "social_confidence": 42,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 98,
+                "vitality_glow": 77
+              },
+              "overall_wellbeing": 64
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0015",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 44,
+                "stress_level": "low",
+                "emotional_positivity": 60,
+                "emotional_stability": 88,
+                "social_confidence": 28
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 44,
+                "facial_tension": 1,
+                "eye_openness": 46,
+                "skin_tone_uniformity": 76
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 60,
+                "stress_resilience": 88,
+                "social_engagement": 44,
+                "social_confidence": 28,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 99,
+                "vitality_glow": 60
+              },
+              "overall_wellbeing": 57
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0016",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 49,
+                "stress_level": "low",
+                "emotional_positivity": 61,
+                "emotional_stability": 88,
+                "social_confidence": 29
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 46,
+                "facial_tension": 1,
+                "eye_openness": 54,
+                "skin_tone_uniformity": 84
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 61,
+                "stress_resilience": 88,
+                "social_engagement": 49,
+                "social_confidence": 29,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 99,
+                "vitality_glow": 65
+              },
+              "overall_wellbeing": 58
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0017",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 31,
+                "stress_level": "low",
+                "emotional_positivity": 50,
+                "emotional_stability": 85,
+                "social_confidence": 18
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 29,
+                "facial_tension": 0,
+                "eye_openness": 34,
+                "skin_tone_uniformity": 71
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 50,
+                "stress_resilience": 85,
+                "social_engagement": 31,
+                "social_confidence": 18,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 100,
+                "vitality_glow": 50
+              },
+              "overall_wellbeing": 52
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0018",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 36,
+                "stress_level": "low",
+                "emotional_positivity": 56,
+                "emotional_stability": 87,
+                "social_confidence": 24
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 38,
+                "facial_tension": 0,
+                "eye_openness": 35,
+                "skin_tone_uniformity": 74
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 56,
+                "stress_resilience": 87,
+                "social_engagement": 36,
+                "social_confidence": 24,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 100,
+                "vitality_glow": 56
+              },
+              "overall_wellbeing": 55
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0019",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 29,
+                "stress_level": "low",
+                "emotional_positivity": 50,
+                "emotional_stability": 85,
+                "social_confidence": 19
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 30,
+                "facial_tension": 1,
+                "eye_openness": 29,
+                "skin_tone_uniformity": 69
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 50,
+                "stress_resilience": 85,
+                "social_engagement": 29,
+                "social_confidence": 19,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 99,
+                "vitality_glow": 49
+              },
+              "overall_wellbeing": 52
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0020",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 57,
+                "stress_level": "low",
+                "emotional_positivity": 69,
+                "emotional_stability": 90,
+                "social_confidence": 36
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 57,
+                "facial_tension": 1,
+                "eye_openness": 57,
+                "skin_tone_uniformity": 79
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 69,
+                "stress_resilience": 90,
+                "social_engagement": 57,
+                "social_confidence": 36,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 99,
+                "vitality_glow": 68
+              },
+              "overall_wellbeing": 61
+            },
+            {
+              "person_id": "GREENFIELD_SCHOOL_P0021",
+              "has_face": true,
+              "emotion": {
+                "dominant_emotion": "neutral",
+                "emotion_scores": {
+                  "happy": 0,
+                  "neutral": 60,
+                  "sad": 0,
+                  "angry": 0,
+                  "fear": 0,
+                  "surprise": 0,
+                  "disgust": 0
+                },
+                "engagement": 57,
+                "stress_level": "low",
+                "emotional_positivity": 70,
+                "emotional_stability": 91,
+                "social_confidence": 37
+              },
+              "posture": {
+                "shoulder_symmetry": 50,
+                "head_forward_tilt": 50,
+                "spine_alignment": 50,
+                "body_openness": 50,
+                "movement_energy": 50,
+                "posture_quality": "unknown",
+                "posture_score": 50,
+                "energy_level": 50,
+                "landmarks": null
+              },
+              "texture": {
+                "face_brightness": 58,
+                "facial_tension": 0,
+                "eye_openness": 56,
+                "skin_tone_uniformity": 97
+              },
+              "gaze": {
+                "gaze_direction": "forward",
+                "gaze_horizontal": 0.0,
+                "gaze_vertical": 0.0,
+                "head_yaw": 0.0,
+                "head_pitch": 0.0,
+                "attention_score": 50,
+                "focus_zone": "ahead",
+                "eye_contact": false,
+                "eye_openness": 50
+              },
+              "traits": {
+                "emotional_positivity": 70,
+                "stress_resilience": 91,
+                "social_engagement": 57,
+                "social_confidence": 37,
+                "physical_energy": 50,
+                "posture_health": 50,
+                "body_openness": 50,
+                "focus_alertness": 50,
+                "facial_relaxation": 100,
+                "vitality_glow": 77
+              },
+              "overall_wellbeing": 62
+            }
+          ],
+          "frame_time_sec": 0.0
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "unique_persons": 21,
+    "average_wellbeing": 57,
+    "total_detections": 21
+  }
+}
