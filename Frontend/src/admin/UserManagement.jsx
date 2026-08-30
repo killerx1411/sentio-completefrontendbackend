@@ -1,8 +1,10 @@
+// SECURITY NOTE: any future search/filter inputs over the user list must be handled as display-only — never interpolated into API query strings without server-side validation.
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Edit2, Trash2, Shield } from "lucide-react";
 import { useSession } from "../context/SessionContext";
-import { getPrimaryRole, isSuperAdminUser } from "../utils/roleRoutes";
+import { ROLES, getPrimaryRole, isSuperAdminUser } from "../utils/roleRoutes";
 import {
   fetchUsers,
   fetchRoles,
@@ -14,7 +16,7 @@ import "./admin.css";
 export default function UserManagement() {
   const { user: sessionUser } = useSession();
   const isSuperAdmin = isSuperAdminUser(sessionUser);
-  const isNormalAdmin = getPrimaryRole(sessionUser) === "Normal Admin";
+  const isNormalAdmin = getPrimaryRole(sessionUser) === ROLES.NORMAL_ADMIN;
   const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -23,6 +25,8 @@ export default function UserManagement() {
   const [modalError, setModalError] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -35,7 +39,7 @@ export default function UserManagement() {
   });
 
   const assignableRoles = roles.filter(
-    (r) => isSuperAdmin || r.name !== "Super Admin"
+    (r) => isSuperAdmin || r.name !== ROLES.SUPER_ADMIN
   );
 
   async function load() {
@@ -79,6 +83,10 @@ export default function UserManagement() {
 
   async function handleCreate(e) {
     e.preventDefault();
+    if (isNormalAdmin) {
+      setModalError("Insufficient permissions.");
+      return;
+    }
     setModalError("");
     setActionLoading(true);
     try {
@@ -101,19 +109,32 @@ export default function UserManagement() {
     }
   }
 
-  async function handleDelete(target) {
-    if (isNormalAdmin) return;
+  function requestDelete(target) {
+    if (isNormalAdmin) {
+      setError("Insufficient permissions.");
+      return;
+    }
     const roleName = target.roles?.[0]?.name;
     if (target.email === sessionUser?.email) return;
-    if (roleName === "Super Admin" && !isSuperAdmin) return;
-    if (!window.confirm(`Delete user ${target.full_name}?`)) return;
+    if (roleName === ROLES.SUPER_ADMIN && !isSuperAdmin) return;
+    setDeleteTarget(target);
+  }
 
+  async function confirmDelete() {
+    if (!deleteTarget || isNormalAdmin) {
+      setError("Insufficient permissions.");
+      return;
+    }
+    setDeleteLoading(true);
     setError("");
     try {
-      await deleteUser(target.id);
+      await deleteUser(deleteTarget.id);
+      setDeleteTarget(null);
       await load();
     } catch (err) {
       setError(err.message || "Failed to delete user");
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
@@ -182,7 +203,7 @@ export default function UserManagement() {
               ) : (
                 users.map((u) => {
                   const userRole = u.roles?.[0]?.name || "No role";
-                  const isTargetSuperAdmin = userRole === "Super Admin";
+                  const isTargetSuperAdmin = userRole === ROLES.SUPER_ADMIN;
                   const canDelete =
                     u.email !== sessionUser?.email &&
                     !(isTargetSuperAdmin && !isSuperAdmin);
@@ -224,7 +245,7 @@ export default function UserManagement() {
                             type="button"
                             className="admin-icon-btn danger"
                             disabled={!canDelete}
-                            onClick={() => handleDelete(u)}
+                            onClick={() => requestDelete(u)}
                             title="Delete user"
                           >
                             <Trash2 size={16} />
@@ -259,6 +280,36 @@ export default function UserManagement() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="admin-modal-overlay">
+          <div className="admin-card admin-modal">
+            <h3 className="admin-section-title">Confirm deletion</h3>
+            <p className="admin-page-sub">
+              Permanently delete <strong>{deleteTarget.full_name}</strong> ({deleteTarget.email})?
+              This action cannot be undone.
+            </p>
+            <div className="admin-modal-actions">
+              <button
+                type="button"
+                className="admin-btn"
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="admin-btn danger"
+                onClick={confirmDelete}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? "Deleting…" : "Delete user"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

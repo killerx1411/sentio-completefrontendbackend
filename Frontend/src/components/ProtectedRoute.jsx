@@ -1,6 +1,8 @@
+// SECURITY: ProtectedRoute must never render children until initializing is false and isAuthenticated is confirmed.
+
 import { Navigate, useLocation } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
-import { getDashboardPathForUser, getPrimaryRole } from "../utils/roleRoutes";
+import { getDashboardPathForUser } from "../utils/roleRoutes";
 
 function LoadingScreen() {
   return (
@@ -31,8 +33,9 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   }
 
   if (allowedRoles?.length) {
-    const role = getPrimaryRole(user);
-    if (!allowedRoles.includes(role)) {
+    const userRoleNames = (user?.roles || []).map((r) => r.name);
+    const hasAllowedRole = userRoleNames.some((name) => allowedRoles.includes(name));
+    if (!hasAllowedRole) {
       return <Navigate to={getDashboardPathForUser(user)} replace />;
     }
   }

@@ -1,12 +1,20 @@
 # Dependencies
 /node_modules
 
-# Local environment (secrets & environment-specific URLs)
+# Local environment (secrets & machine-specific overrides) — never committed.
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-#h
+
+# These two ARE committed: they hold only public origins (CRA inlines every
+# REACT_APP_* into the bundle, so nothing secret can live here anyway), and the
+# production build is not reproducible in CI without them. The root .gitignore
+# ignores `.env.*`, so re-include them explicitly.
+!.env.example
+!.env.development
+!.env.production
+
 # Production build
 /build

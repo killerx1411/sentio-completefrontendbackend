@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useBlocker } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useSession } from "../context/SessionContext";
-import { getPrimaryRole, isSuperAdminUser } from "../utils/roleRoutes";
+import { ROLES, getPrimaryRole, isSuperAdminUser } from "../utils/roleRoutes";
 import {
   fetchUserById,
   fetchRoles,
@@ -11,18 +11,40 @@ import {
 } from "../services/adminApi";
 import "./admin.css";
 
+const PROTECTED_ACCOUNTS = ["admin@sentiomind.com"];
+
+function getPasswordValidationError(password) {
+  if (password.length < 10) {
+    return "Password must be at least 10 characters.";
+  }
+  if (!/[A-Z]/.test(password)) {
+    return "Password must contain at least one uppercase letter.";
+  }
+  if (!/[a-z]/.test(password)) {
+    return "Password must contain at least one lowercase letter.";
+  }
+  if (!/[0-9]/.test(password)) {
+    return "Password must contain at least one digit.";
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return "Password must contain at least one special character.";
+  }
+  return null;
+}
+
+// Keys must match auth_enabler.permissions.name (Backend auth/db/seed.sql).
 const PERM_GROUPS = [
   {
     title: "User management",
-    keys: ["users.view", "users.create", "users.edit", "users.delete"],
+    keys: ["users.read", "users.write", "users.delete", "users.approve"],
   },
   {
     title: "Roles & security",
-    keys: ["roles.manage", "audit.view"],
+    keys: ["roles.assign", "permissions.manage", "audit.read"],
   },
   {
     title: "Platform tools",
-    keys: ["students.manage", "reports.export", "ai.use"],
+    keys: ["reports.read", "reports.write", "observations.write"],
   },
 ];
 
@@ -31,7 +53,7 @@ export default function UserDetails() {
   const navigate = useNavigate();
   const { user: sessionUser } = useSession();
   const isSuperAdmin = isSuperAdminUser(sessionUser);
-  const isNormalAdmin = getPrimaryRole(sessionUser) === "Normal Admin";
+  const isNormalAdmin = getPrimaryRole(sessionUser) === ROLES.NORMAL_ADMIN;
 
   const [activeTab, setActiveTab] = useState("general");
   const [user, setUser] = useState(null);
@@ -40,6 +62,8 @@ export default function UserDetails() {
   const [auditLogs, setAuditLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
@@ -58,12 +82,12 @@ export default function UserDetails() {
   });
 
   const assignableRoles = roles.filter(
-    (r) => isSuperAdmin || r.name !== "Super Admin"
+    (r) => isSuperAdmin || r.name !== ROLES.SUPER_ADMIN
   );
   const userRoleName = user?.roles?.[0]?.name || "No role";
-  const isTargetSuperAdmin = userRoleName === "Super Admin";
+  const isTargetSuperAdmin = userRoleName === ROLES.SUPER_ADMIN;
   const cannotModify = isTargetSuperAdmin && !isSuperAdmin;
-  const protectedEmail = user?.email === "admin@sentiomind.com";
+  const protectedEmail = PROTECTED_ACCOUNTS.includes(user?.email);
 
   async function load() {
     setLoading(true);
@@ -82,7 +106,7 @@ export default function UserDetails() {
         u.roles?.[0]?.id?.toString() ||
         assignableRoles[0]?.id?.toString() ||
         "";
-      setFormData({
+      const loadedForm = {
         full_name: u.full_name || "",
         email: u.email || "",
         phone: u.phone || "",
@@ -91,7 +115,10 @@ export default function UserDetails() {
         status: u.status || "active",
         role_id: currentRoleId,
         mfa_enabled: !!u.mfa_enabled,
-      });
+      };
+      setFormData(loadedForm);
+      setOriginalFormData(loadedForm);
+      setIsDirty(false);
     } catch (err) {
       setError(err.message || "Failed to load user");
     } finally {
@@ -109,6 +136,40 @@ export default function UserDetails() {
       navigate("/admin/users", { replace: true });
     }
   }, [isNormalAdmin, navigate]);
+
+  useEffect(() => {
+    if (!originalFormData) return;
+    setIsDirty(JSON.stringify(formData) !== JSON.stringify(originalFormData));
+  }, [formData, originalFormData]);
+
+  useEffect(() => {
+    function onBeforeUnload(e) {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [isDirty]);
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      const leave = window.confirm("You have unsaved changes. Leave anyway?");
+      if (leave) {
+        blocker.proceed();
+      } else {
+        blocker.reset();
+      }
+    }
+  }, [blocker]);
+
+  const formDisabled = saveLoading || cannotModify;
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
@@ -141,6 +202,8 @@ export default function UserDetails() {
     try {
       const updated = await updateUser(id, buildPayload());
       setUser((prev) => ({ ...prev, ...updated }));
+      setOriginalFormData({ ...formData });
+      setIsDirty(false);
       setSuccess("Profile updated successfully.");
     } catch (err) {
       setError(err.message || "Update failed");
@@ -152,12 +215,18 @@ export default function UserDetails() {
   async function handleToggleMfa() {
     if (isNormalAdmin) return;
     const next = !formData.mfa_enabled;
-    setFormData((prev) => ({ ...prev, mfa_enabled: next }));
+    if (next) {
+      setError(
+        "MFA must be enabled by the user in their account settings after completing TOTP setup."
+      );
+      return;
+    }
+    setFormData((prev) => ({ ...prev, mfa_enabled: false }));
     try {
-      await updateUser(id, buildPayload({ mfa_enabled: next }));
-      setSuccess(`MFA ${next ? "enabled" : "disabled"}.`);
+      await updateUser(id, buildPayload({ mfa_enabled: false }));
+      setSuccess("MFA disabled.");
     } catch (err) {
-      setFormData((prev) => ({ ...prev, mfa_enabled: !next }));
+      setFormData((prev) => ({ ...prev, mfa_enabled: true }));
       setError(err.message || "MFA update failed");
     }
   }
@@ -171,8 +240,9 @@ export default function UserDetails() {
       setError("Passwords do not match.");
       return;
     }
-    if (passwordFields.newPassword.length < 6) {
-      setError("Password must be at least 6 characters.");
+    const passwordError = getPasswordValidationError(passwordFields.newPassword);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
     setSaveLoading(true);
@@ -275,27 +345,27 @@ export default function UserDetails() {
                 <div className="admin-form-grid">
                   <label>
                     Full name
-                    <input name="full_name" value={formData.full_name} onChange={handleChange} required disabled={cannotModify} />
+                    <input name="full_name" value={formData.full_name} onChange={handleChange} required disabled={formDisabled} />
                   </label>
                   <label>
                     Email
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required disabled={protectedEmail || cannotModify} />
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} required disabled={protectedEmail || formDisabled} />
                   </label>
                   <label>
                     Phone
-                    <input name="phone" value={formData.phone} onChange={handleChange} disabled={cannotModify} />
+                    <input name="phone" value={formData.phone} onChange={handleChange} disabled={formDisabled} />
                   </label>
                   <label>
                     Department
-                    <input name="department" value={formData.department} onChange={handleChange} disabled={cannotModify} />
+                    <input name="department" value={formData.department} onChange={handleChange} disabled={formDisabled} />
                   </label>
                   <label>
                     Employee ID
-                    <input name="employee_id" value={formData.employee_id} onChange={handleChange} disabled={cannotModify} />
+                    <input name="employee_id" value={formData.employee_id} onChange={handleChange} disabled={formDisabled} />
                   </label>
                   <label>
                     Status
-                    <select name="status" value={formData.status} onChange={handleChange} disabled={protectedEmail || cannotModify}>
+                    <select name="status" value={formData.status} onChange={handleChange} disabled={protectedEmail || formDisabled}>
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
@@ -317,7 +387,7 @@ export default function UserDetails() {
                     name="role_id"
                     value={formData.role_id}
                     onChange={handleChange}
-                    disabled={protectedEmail || cannotModify}
+                    disabled={protectedEmail || formDisabled}
                     style={{ marginTop: "0.35rem" }}
                   >
                     {assignableRoles.map((r) => (
@@ -364,7 +434,7 @@ export default function UserDetails() {
                     type="checkbox"
                     checked={formData.mfa_enabled}
                     onChange={handleToggleMfa}
-                    disabled={protectedEmail || cannotModify}
+                    disabled={protectedEmail || formDisabled}
                   />
                   Require MFA on login
                 </label>
@@ -379,7 +449,7 @@ export default function UserDetails() {
                       onChange={(e) =>
                         setPasswordFields((p) => ({ ...p, newPassword: e.target.value }))
                       }
-                      disabled={cannotModify}
+                      disabled={formDisabled}
                       required
                     />
                   </label>
@@ -391,7 +461,7 @@ export default function UserDetails() {
                       onChange={(e) =>
                         setPasswordFields((p) => ({ ...p, confirmPassword: e.target.value }))
                       }
-                      disabled={cannotModify}
+                      disabled={formDisabled}
                       required
                     />
                   </label>
@@ -437,6 +507,7 @@ export default function UserDetails() {
                       auditLogs.map((log) => (
                         <tr key={log.id}>
                           <td>{new Date(log.created_at).toLocaleString()}</td>
+                          {/* JSX text nodes are XSS-safe — no dangerouslySetInnerHTML used */}
                           <td>{log.action}</td>
                           <td>{log.module}</td>
                           <td>{log.description}</td>

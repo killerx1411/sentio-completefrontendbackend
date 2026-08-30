@@ -7,7 +7,7 @@ import {
 } from "recharts";
 import icon from "./assets/icon.png";
 import { API_BASE } from "./config/env";
-import { apiFetch } from "./utils/api";
+import { authFetch } from "./services/authApi";
 
 // ─── Brand tokens (mirrors PrincipalDashboard exactly) ────────────────────────
 const C = {
@@ -499,8 +499,7 @@ export default function TeacherDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch("/get_report");
-      const data = await res.json();
+      const data = await authFetch("/analysis/report");
       if (data.success && data.report) {
         setReport(data.report);
         const persons = Object.values(data.report.person_profiles || {});

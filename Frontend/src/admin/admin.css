@@ -892,4 +892,58 @@
 
 }
 
+.admin-audit-user {
+  font-weight: 500;
+  color: #0f4c5c;
+}
 
+.admin-audit-details {
+  background: #f7f9fb;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding: 0.75rem 1rem !important;
+}
+
+
+
+/* Sidebar section headings. The console serves two administrations (B2B and
+   Mobile); a signed-in user sees only the group their role belongs to. */
+.admin-nav-group {
+
+  margin: 1rem 0 0.4rem;
+
+  padding: 0 0.85rem;
+
+  font-size: 0.7rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+
+  color: #94a3b8;
+
+}
+
+
+
+.admin-nav-group:first-child {
+
+  margin-top: 0;
+
+}
+
+
+
+.admin-nav-note {
+
+  display: block;
+
+  padding: 0.35rem 0.85rem;
+
+  font-size: 0.8rem;
+
+  color: #94a3b8;
+
+}

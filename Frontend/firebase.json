@@ -1,0 +1,50 @@
+{
+  "hosting": {
+    "public": "build",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "comment": "SPA fallback. React Router owns /admin/mobile/experts, /admin/mobile/users, /admin/mobile/dashboard and every other client route; without this, refreshing or deep-linking any of them asks the static host for a file that does not exist and returns 404. Serve index.html and let the router resolve the path.",
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "comment": "Content-addressed filenames (main.<hash>.js) — safe to cache forever.",
+        "source": "/static/**",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "comment": "index.html must never be cached, or a deploy leaves browsers pinned to a bundle whose hashed assets are gone.",
+        "source": "/index.html",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Strict-Transport-Security",
+            "value": "max-age=63072000; includeSubDomains; preload"
+          },
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "X-Frame-Options", "value": "DENY" },
+          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+          {
+            "key": "Permissions-Policy",
+            "value": "geolocation=(), microphone=(), camera=()"
+          },
+          {
+            "comment": "connect-src lists exactly the two APIs this console talks to: the B2B auth authority and the Mobile Admin API. 'unsafe-inline' on style-src is required by CRA's injected styles and by the inline style props this codebase uses; script-src has no 'unsafe-inline', so an injected <script> is still blocked.",
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://b2bapi.sentiomind.in https://api.sentiomind.in; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+          }
+        ]
+      }
+    ]
+  }
+}

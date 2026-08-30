@@ -4,13 +4,20 @@
  * Typography: Inter, Poppins, DM Sans
  * Style: Calm intelligence — trustworthy, non-intrusive, humane
  */
+// SECURITY NOTE: This component uses an inline <style> tag which requires unsafe-inline in CSP style-src. Consider migrating to CSS modules or a CSS-in-JS solution with nonce support in a future refactor.
+// SECURITY: all person data rendered as JSX text — no dangerouslySetInnerHTML used anywhere in this component.
 
 import { useState, useEffect } from "react";
 import LogoutButton from "./components/LogoutButton";
 import { useSession } from "./context/SessionContext";
 import icon from "./assets/icon.png";
-import { API_BASE } from "./config/env";
-import { apiFetch } from "./utils/api";
+import { authFetch } from "./services/authApi";
+import "./BehaviourAnalyst.css";
+
+function bindElStyle(el, style) {
+  if (el && style) Object.assign(el.style, style);
+}
+
 
 // ─── Brand tokens (strict brand guideline compliance) ─────────────────────────
 const BRAND = {
@@ -590,13 +597,13 @@ function TraitBar({ label, icon, value }) {
   return (
     <div className="sd-trait-bar-row">
       <div className="sd-trait-bar-labels">
-        <span className="sd-trait-name" style={{ display: "flex", alignItems: "center", gap: 4, color: BRAND.textMuted }}>
-          <span style={{ color }}>{icon}</span>{label}
+        <span className="sd-trait-name" ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 4, color: BRAND.textMuted })}>
+          <span ref={(el) => bindElStyle(el, { color })}>{icon}</span>{label}
         </span>
-        <span className="sd-trait-val" style={{ color }}>{value}%</span>
+        <span className="sd-trait-val" ref={(el) => bindElStyle(el, { color })}>{value}%</span>
       </div>
       <div className="sd-bar-track">
-        <div className="sd-bar-fill" style={{ width: `${value}%`, background: color }} />
+        <div className="sd-bar-fill" ref={(el) => bindElStyle(el, { width: `${value}%`, background: color })} />
       </div>
     </div>
   );
@@ -615,25 +622,25 @@ function GazeIndicator({ gaze }) {
   return (
     <div className="sd-gaze-box">
       <div className="sd-gaze-label">Gaze & Attention</div>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 12 })}>
         {/* Eye tracker */}
-        <div style={{ width: 48, height: 32, background: "rgba(111,190,220,0.1)", border: `1.5px solid ${BRAND.tealBorder2}`, borderRadius: 20, position: "relative", overflow: "hidden", flexShrink: 0 }}>
-          <div style={{ width: 11, height: 11, background: BRAND.aquaTeal, borderRadius: "50%", position: "absolute", left: `calc(${irisX}% - 5.5px)`, top: `calc(${irisY}% - 5.5px)`, transition: "all 0.3s", boxShadow: `0 0 0 2px rgba(46,196,182,0.2)` }} />
+        <div ref={(el) => bindElStyle(el, { width: 48, height: 32, background: "rgba(111,190,220,0.1)", border: `1.5px solid ${BRAND.tealBorder2}`, borderRadius: 20, position: "relative", overflow: "hidden", flexShrink: 0 })}>
+          <div ref={(el) => bindElStyle(el, { width: 11, height: 11, background: BRAND.aquaTeal, borderRadius: "50%", position: "absolute", left: `calc(${irisX}% - 5.5px)`, top: `calc(${irisY}% - 5.5px)`, transition: "all 0.3s", boxShadow: `0 0 0 2px rgba(46,196,182,0.2)` })} />
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
-            <span style={{ padding: "2px 7px", borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", background: dir === "forward" ? "rgba(34,197,94,0.1)" : "rgba(245,158,11,0.1)", color: dir === "forward" ? BRAND.green : BRAND.amber }}>
+        <div ref={(el) => bindElStyle(el, { flex: 1 })}>
+          <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" })}>
+            <span ref={(el) => bindElStyle(el, { padding: "2px 7px", borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", background: dir === "forward" ? "rgba(34,197,94,0.1)" : "rgba(245,158,11,0.1)", color: dir === "forward" ? BRAND.green : BRAND.amber })}>
               {dir}
             </span>
-            {gaze.focus_zone && <span style={{ fontSize: 10, color: BRAND.textFaint }}>zone: <b>{gaze.focus_zone}</b></span>}
-            {gaze.eye_contact && <span style={{ fontSize: 10, color: BRAND.green, fontWeight: 600 }}>Eye contact</span>}
+            {gaze.focus_zone && <span ref={(el) => bindElStyle(el, { fontSize: 10, color: BRAND.textFaint })}>zone: <b>{gaze.focus_zone}</b></span>}
+            {gaze.eye_contact && <span ref={(el) => bindElStyle(el, { fontSize: 10, color: BRAND.green, fontWeight: 600 })}>Eye contact</span>}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 10, color: BRAND.textFaint }}>Attention</span>
-            <div style={{ width: 60, height: 4, background: BRAND.offWhite, borderRadius: 2, overflow: "hidden" }}>
-              <div style={{ width: `${attn}%`, height: "100%", background: attnColor, borderRadius: 2 }} />
+          <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 6 })}>
+            <span ref={(el) => bindElStyle(el, { fontSize: 10, color: BRAND.textFaint })}>Attention</span>
+            <div ref={(el) => bindElStyle(el, { width: 60, height: 4, background: BRAND.offWhite, borderRadius: 2, overflow: "hidden" })}>
+              <div ref={(el) => bindElStyle(el, { width: `${attn}%`, height: "100%", background: attnColor, borderRadius: 2 })} />
             </div>
-            <span style={{ fontSize: 10, fontWeight: 700, color: attnColor }}>{attn}%</span>
+            <span ref={(el) => bindElStyle(el, { fontSize: 10, fontWeight: 700, color: attnColor })}>{attn}%</span>
           </div>
         </div>
       </div>
@@ -651,21 +658,21 @@ function InterventionLevel({ wellbeingScore }) {
   const current = levels.find(l => wellbeingScore >= l.range[0] && wellbeingScore <= l.range[1]) || levels[3];
 
   return (
-    <div className="sd-card" style={{ flex: 1 }}>
+    <div className="sd-card" ref={(el) => bindElStyle(el, { flex: 1 })}>
       <div className="sd-card-title">Intervention Level</div>
       {levels.map((l, i) => {
         const isActive = l.label === current.label;
         return (
-          <div key={i} className="sd-level-row" style={{
+          <div key={i} className="sd-level-row" ref={(el) => bindElStyle(el, {
             background:  isActive ? "rgba(46,196,182,0.08)" : "transparent",
             color:       isActive ? BRAND.deepTeal : BRAND.textFaint,
             fontWeight:  isActive ? 600 : 400,
             fontSize:    13,
             borderLeft:  isActive ? `3px solid ${BRAND.aquaTeal}` : "3px solid transparent",
-          }}>
+          })}>
             <span>{l.label}</span>
             {isActive && (
-              <span style={{ fontSize: 10, fontWeight: 700, color: BRAND.aquaTeal, background: "rgba(46,196,182,0.1)", padding: "2px 8px", borderRadius: 5 }}>
+              <span ref={(el) => bindElStyle(el, { fontSize: 10, fontWeight: 700, color: BRAND.aquaTeal, background: "rgba(46,196,182,0.1)", padding: "2px 8px", borderRadius: 5 })}>
                 Current
               </span>
             )}
@@ -680,34 +687,34 @@ function SessionHistory({ sessions }) {
   if (!sessions || sessions.length === 0) return (
     <div className="sd-card sd-session-span">
       <div className="sd-card-title">Session History</div>
-      <p style={{ fontSize: 13, color: BRAND.textFaint }}>No session data available.</p>
+      <p ref={(el) => bindElStyle(el, { fontSize: 13, color: BRAND.textFaint })}>No session data available.</p>
     </div>
   );
 
   const sessionColors = [BRAND.aquaTeal, BRAND.softBlue, BRAND.deepTeal, "#a855f7"];
 
   return (
-    <div className="sd-card sd-session-span" style={{ overflow: "auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+    <div className="sd-card sd-session-span" ref={(el) => bindElStyle(el, { overflow: "auto" })}>
+      <div ref={(el) => bindElStyle(el, { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 })}>
         <div>
-          <div className="sd-card-title" style={{ marginBottom: 2 }}>Session History</div>
-          <div style={{ fontSize: 11, color: BRAND.textFaint }}>Detection dates for this student</div>
+          <div className="sd-card-title" ref={(el) => bindElStyle(el, { marginBottom: 2 })}>Session History</div>
+          <div ref={(el) => bindElStyle(el, { fontSize: 11, color: BRAND.textFaint })}>Detection dates for this student</div>
         </div>
-        <span style={{ fontSize: 11, color: BRAND.textMuted, fontWeight: 500 }}>{sessions.length} sessions</span>
+        <span ref={(el) => bindElStyle(el, { fontSize: 11, color: BRAND.textMuted, fontWeight: 500 })}>{sessions.length} sessions</span>
       </div>
       <div>
         {sessions.map((s, i) => (
           <div key={i} className="sd-session-row">
-            <div className="sd-session-icon" style={{ background: sessionColors[i % sessionColors.length] }}>
+            <div className="sd-session-icon" ref={(el) => bindElStyle(el, { background: sessionColors[i % sessionColors.length] })}>
               {s.date?.slice(8, 10) || i + 1}
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: BRAND.deepTeal }}>{s.date}</div>
-              <div className="sd-meta" style={{ marginTop: 2 }}>
+            <div ref={(el) => bindElStyle(el, { flex: 1 })}>
+              <div ref={(el) => bindElStyle(el, { fontSize: 14, fontWeight: 600, color: BRAND.deepTeal })}>{s.date}</div>
+              <div className="sd-meta" ref={(el) => bindElStyle(el, { marginTop: 2 })}>
                 Wellbeing: {s.wellbeing}% · Emotion: {s.emotion} · Attention: {s.attention}%
               </div>
             </div>
-            <span className="sd-status-badge" style={{ color: wellbeingColor(s.wellbeing), background: `${wellbeingColor(s.wellbeing)}18` }}>
+            <span className="sd-status-badge" ref={(el) => bindElStyle(el, { color: wellbeingColor(s.wellbeing), background: `${wellbeingColor(s.wellbeing)}18` })}>
               {wellbeingLabel(s.wellbeing)}
             </span>
           </div>
@@ -720,7 +727,7 @@ function SessionHistory({ sessions }) {
 // ─── Brand nav logo SVG ───────────────────────────────────────────────────────
 function BrandIcon() {
   return (
-    <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(46,196,182,0.1)", border: `1px solid ${BRAND.tealBorder2}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+    <div ref={(el) => bindElStyle(el, { width: 36, height: 36, borderRadius: 10, background: "rgba(46,196,182,0.1)", border: `1px solid ${BRAND.tealBorder2}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 })}>
       <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
         <path d="M22 28c0-5.523 4.477-10 10-10s10 4.477 10 10c0 1.5-.33 2.92-.918 4.194C43.012 33.36 44 35.07 44 37c0 3.314-2.686 6-6 6a5.98 5.98 0 01-3-.798A5.98 5.98 0 0132 43a5.98 5.98 0 01-3 .798A6 6 0 0120 37c0-1.93.988-3.64 2.918-4.806A9.96 9.96 0 0122 28z" fill="rgba(46,196,182,0.2)" stroke={BRAND.aquaTeal} strokeWidth="2" strokeLinejoin="round" />
         <path d="M32 18v25M22 28c3 0 5 2 5 5s-2 4-5 4M42 28c-3 0-5 2-5 5s2 4 5 4" stroke={BRAND.aquaTeal} strokeWidth="2" strokeLinecap="round" />
@@ -733,14 +740,14 @@ function BrandIcon() {
 // ─── Skeleton loader ──────────────────────────────────────────────────────────
 function SkeletonDash() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14, padding: 2 }}>
-      <div className="sd-skeleton" style={{ height: 100, borderRadius: 14 }} />
-      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 14 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {[160, 120, 80].map((h, i) => <div key={i} className="sd-skeleton" style={{ height: h, borderRadius: 14 }} />)}
+    <div ref={(el) => bindElStyle(el, { display: "flex", flexDirection: "column", gap: 14, padding: 2 })}>
+      <div className="sd-skeleton" ref={(el) => bindElStyle(el, { height: 100, borderRadius: 14 })} />
+      <div ref={(el) => bindElStyle(el, { display: "grid", gridTemplateColumns: "300px 1fr", gap: 14 })}>
+        <div ref={(el) => bindElStyle(el, { display: "flex", flexDirection: "column", gap: 12 })}>
+          {[160, 120, 80].map((h, i) => <div key={i} className="sd-skeleton" ref={(el) => bindElStyle(el, { height: h, borderRadius: 14 })} />)}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          {[1,2,3,4].map(i => <div key={i} className="sd-skeleton" style={{ borderRadius: 14 }} />)}
+        <div ref={(el) => bindElStyle(el, { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 })}>
+          {[1,2,3,4].map(i => <div key={i} className="sd-skeleton" ref={(el) => bindElStyle(el, { borderRadius: 14 })} />)}
         </div>
       </div>
     </div>
@@ -763,17 +770,16 @@ const BehaviourIntelligenceDashboard = () => {
   async function fetchReport() {
     setLoading(true); setError(null);
     try {
-      const res  = await apiFetch("/get_report");
-      const data = await res.json();
+      const data = await authFetch("/analysis/report");
       if (data.success && data.report) {
         setReport(data.report);
         const persons = Object.values(data.report.person_profiles || {});
         if (persons.length > 0) setSelectedPersonId(persons[0].person_id);
       } else {
-        setError("No report available. Run the analysis first.");
+        setError("Unable to load data. Please refresh or contact support.");
       }
     } catch {
-      setError(`Cannot connect to backend at ${API_BASE}. Make sure the Flask server is running.`);
+      setError("Unable to load data. Please refresh or contact support.");
     }
     setLoading(false);
   }
@@ -808,13 +814,13 @@ const BehaviourIntelligenceDashboard = () => {
     if (loading) return <SkeletonDash />;
 
     if (error) return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, flexDirection: "column", gap: 14, padding: 40 }}>
-        <div style={{ width: 48, height: 48, borderRadius: 12, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", justifyContent: "center", flex: 1, flexDirection: "column", gap: 14, padding: 40 })}>
+        <div ref={(el) => bindElStyle(el, { width: 48, height: 48, borderRadius: 12, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", display: "flex", alignItems: "center", justifyContent: "center" })}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={BRAND.red} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill={BRAND.red} stroke="none"/></svg>
         </div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: BRAND.deepTeal }}>Connection Error</div>
-        <div style={{ fontSize: 13, color: BRAND.textMuted, textAlign: "center", maxWidth: 400, lineHeight: 1.6 }}>{error}</div>
-        <button onClick={fetchReport} style={{ marginTop: 4, padding: "9px 22px", background: `linear-gradient(90deg, ${BRAND.deepTeal}, ${BRAND.aquaTeal})`, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "opacity 0.2s" }}
+        <div ref={(el) => bindElStyle(el, { fontSize: 16, fontWeight: 700, color: BRAND.deepTeal })}>Connection Error</div>
+        <div ref={(el) => bindElStyle(el, { fontSize: 13, color: BRAND.textMuted, textAlign: "center", maxWidth: 400, lineHeight: 1.6 })}>{error}</div>
+        <button onClick={fetchReport} ref={(el) => bindElStyle(el, { marginTop: 4, padding: "9px 22px", background: `linear-gradient(90deg, ${BRAND.deepTeal}, ${BRAND.aquaTeal})`, color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "opacity 0.2s" })}
           onMouseOver={e => e.target.style.opacity = "0.88"} onMouseOut={e => e.target.style.opacity = "1"}>
           Retry
         </button>
@@ -822,8 +828,8 @@ const BehaviourIntelligenceDashboard = () => {
     );
 
     if (!selectedPerson) return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
-        <div style={{ fontSize: 14, color: BRAND.textFaint }}>No person data found. Run analysis first.</div>
+      <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", justifyContent: "center", flex: 1 })}>
+        <div ref={(el) => bindElStyle(el, { fontSize: 14, color: BRAND.textFaint })}>No person data found. Run analysis first.</div>
       </div>
     );
 
@@ -840,7 +846,7 @@ const BehaviourIntelligenceDashboard = () => {
                 · {report?.overall_stats?.total_schools || 0} school(s)
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 10 })}>
               <select className="sd-select" value={selectedPersonId || ""} onChange={e => setSelectedPersonId(e.target.value)}>
                 {persons.map(p => (
                   <option key={p.person_id} value={p.person_id}>{p.name} ({p.school})</option>
@@ -856,28 +862,28 @@ const BehaviourIntelligenceDashboard = () => {
           <div className="sd-student-bar">
             <div className="sd-avatar">
               {selectedPerson.profile_image
-                ? <img src={`data:image/jpeg;base64,${selectedPerson.profile_image}`} alt={selectedPerson.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ? <img src={`data:image/jpeg;base64,${selectedPerson.profile_image}`} alt={selectedPerson.name} ref={(el) => bindElStyle(el, { width: "100%", height: "100%", objectFit: "cover" })} />
                 : <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(247,249,251,0.9)"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" /></svg>
               }
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <div ref={(el) => bindElStyle(el, { flex: 1 })}>
+              <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" })}>
                 <span className="sd-student-name">{selectedPerson.name}</span>
                 <span className="sd-school-badge">{selectedPerson.school}</span>
                 <span className="sd-meta">· {selectedPerson.total_detections} detections · {selectedPerson.days_present} days</span>
               </div>
-              <div style={{ display: "flex", gap: 16, marginTop: 3 }}>
+              <div ref={(el) => bindElStyle(el, { display: "flex", gap: 16, marginTop: 3 })}>
                 <span className="sd-meta">ID: {selectedPerson.person_id}</span>
                 <span className="sd-meta">First: {selectedPerson.dates_seen?.[0] || "—"}</span>
                 <span className="sd-meta">Last: {selectedPerson.dates_seen?.at(-1) || "—"}</span>
               </div>
             </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div ref={(el) => bindElStyle(el, { display: "flex", gap: 8, alignItems: "center" })}>
               <button className="sd-profile-btn">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 View Profile
               </button>
-              <div className="sd-risk-pill" style={{ color: risk.color, background: risk.bg }}>
+              <div className="sd-risk-pill" ref={(el) => bindElStyle(el, { color: risk.color, background: risk.bg })}>
                 {risk.label}
               </div>
             </div>
@@ -892,26 +898,26 @@ const BehaviourIntelligenceDashboard = () => {
 
             {/* Wellbeing Score */}
             <div className="sd-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <div ref={(el) => bindElStyle(el, { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 })}>
+                <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 7 })}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill={BRAND.amber}><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  <span className="sd-card-title" style={{ marginBottom: 0 }}>Wellbeing Score</span>
+                  <span className="sd-card-title" ref={(el) => bindElStyle(el, { marginBottom: 0 })}>Wellbeing Score</span>
                 </div>
-                <span className="sd-risk-pill" style={{ color: risk.color, background: risk.bg, fontSize: 11 }}>{risk.label}</span>
+                <span className="sd-risk-pill" ref={(el) => bindElStyle(el, { color: risk.color, background: risk.bg, fontSize: 11 })}>{risk.label}</span>
               </div>
 
               <div className="sd-wb-score">{wellbeing}%</div>
 
               <div className="sd-wb-track">
-                <div className="sd-wb-cursor" style={{ left: `${Math.min(wellbeing, 98)}%` }} />
+                <div className="sd-wb-cursor" ref={(el) => bindElStyle(el, { left: `${Math.min(wellbeing, 98)}%` })} />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: BRAND.textFaint, marginBottom: 0 }}>
+              <div ref={(el) => bindElStyle(el, { display: "flex", justifyContent: "space-between", fontSize: 11, color: BRAND.textFaint, marginBottom: 0 })}>
                 <span>Overall Score</span>
                 <span>{selectedPerson.days_present}d tracked</span>
               </div>
 
               <div className="sd-wb-footer">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={BRAND.aquaTeal} strokeWidth="2.5" style={{ marginTop: 1, flexShrink: 0 }}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={BRAND.aquaTeal} strokeWidth="2.5" ref={(el) => bindElStyle(el, { marginTop: 1, flexShrink: 0 })}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 <span className="sd-wb-footer-text">
                   Engagement: {engagement}% · Dominant gaze: {selectedPerson.dominant_gaze || "—"}
                 </span>
@@ -931,7 +937,7 @@ const BehaviourIntelligenceDashboard = () => {
               <div className="sd-stat-mini">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={BRAND.aquaTeal} strokeWidth="1.5" strokeLinecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 <div className="sd-stat-label">Detections</div>
-                <div className="sd-stat-val" style={{ fontSize: 16 }}>{selectedPerson.total_detections}</div>
+                <div className="sd-stat-val" ref={(el) => bindElStyle(el, { fontSize: 16 })}>{selectedPerson.total_detections}</div>
               </div>
             </div>
           </div>
@@ -940,38 +946,38 @@ const BehaviourIntelligenceDashboard = () => {
           <div className="sd-right">
 
             {/* Trait Analysis */}
-            <div className="sd-card" style={{ overflow: "auto" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <div className="sd-card-title" style={{ marginBottom: 0 }}>Trait Analysis</div>
-                <span className="sd-risk-pill" style={{ color: risk.color, background: risk.bg, fontSize: 11 }}>{risk.label}</span>
+            <div className="sd-card" ref={(el) => bindElStyle(el, { overflow: "auto" })}>
+              <div ref={(el) => bindElStyle(el, { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 })}>
+                <div className="sd-card-title" ref={(el) => bindElStyle(el, { marginBottom: 0 })}>Trait Analysis</div>
+                <span className="sd-risk-pill" ref={(el) => bindElStyle(el, { color: risk.color, background: risk.bg, fontSize: 11 })}>{risk.label}</span>
               </div>
               <div>
                 {Object.entries(TRAIT_LABELS).map(([key, label]) => (
                   <TraitBar key={key} label={label} icon={TRAIT_ICONS[key]} value={traits[key] ?? 50} />
                 ))}
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 14, padding: "9px 12px", background: wellbeing >= 50 ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)", borderRadius: 8, border: `1px solid ${wellbeing >= 50 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"}` }}>
-                <span style={{ fontSize: 12, color: wellbeing >= 50 ? BRAND.green : BRAND.red, fontWeight: 500 }}>
+              <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 14, padding: "9px 12px", background: wellbeing >= 50 ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)", borderRadius: 8, border: `1px solid ${wellbeing >= 50 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"}` })}>
+                <span ref={(el) => bindElStyle(el, { fontSize: 12, color: wellbeing >= 50 ? BRAND.green : BRAND.red, fontWeight: 500 })}>
                   {wellbeing >= 70 ? "No acute immediate risk" : wellbeing >= 50 ? "Monitor closely" : "Needs support"}
                 </span>
               </div>
             </div>
 
             {/* Gaze & Emotion */}
-            <div className="sd-card" style={{ display: "flex", flexDirection: "column", overflow: "auto" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <div className="sd-card-title" style={{ marginBottom: 0 }}>Gaze & Emotion</div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: BRAND.textBody }}>{selectedPerson.dominant_gaze || "—"}</span>
+            <div className="sd-card" ref={(el) => bindElStyle(el, { display: "flex", flexDirection: "column", overflow: "auto" })}>
+              <div ref={(el) => bindElStyle(el, { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 })}>
+                <div className="sd-card-title" ref={(el) => bindElStyle(el, { marginBottom: 0 })}>Gaze & Emotion</div>
+                <span ref={(el) => bindElStyle(el, { fontSize: 13, fontWeight: 600, color: BRAND.textBody })}>{selectedPerson.dominant_gaze || "—"}</span>
               </div>
 
               {latestGaze && <GazeIndicator gaze={latestGaze} />}
 
               {/* Latest emotion state */}
               {latestPoint && (
-                <div style={{ marginTop: 12, padding: 12, background: BRAND.offWhite, borderRadius: 10, border: `1px solid ${BRAND.borderLight}` }}>
-                  <div className="sd-gaze-label" style={{ marginBottom: 8 }}>Latest Emotion State</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(46,196,182,0.1)", border: `1px solid ${BRAND.tealBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div ref={(el) => bindElStyle(el, { marginTop: 12, padding: 12, background: BRAND.offWhite, borderRadius: 10, border: `1px solid ${BRAND.borderLight}` })}>
+                  <div className="sd-gaze-label" ref={(el) => bindElStyle(el, { marginBottom: 8 })}>Latest Emotion State</div>
+                  <div ref={(el) => bindElStyle(el, { display: "flex", alignItems: "center", gap: 10 })}>
+                    <div ref={(el) => bindElStyle(el, { width: 38, height: 38, borderRadius: 10, background: "rgba(46,196,182,0.1)", border: `1px solid ${BRAND.tealBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 })}>
                       {/* SVG emotion indicator instead of emoji */}
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={EMOTION_COLORS[latestPoint.gaze] || BRAND.aquaTeal} strokeWidth="2" strokeLinecap="round">
                         <circle cx="12" cy="12" r="10"/>
@@ -984,10 +990,10 @@ const BehaviourIntelligenceDashboard = () => {
                       </svg>
                     </div>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: BRAND.deepTeal, textTransform: "capitalize" }}>{latestPoint.gaze || "Neutral"}</div>
+                      <div ref={(el) => bindElStyle(el, { fontSize: 14, fontWeight: 600, color: BRAND.deepTeal, textTransform: "capitalize" })}>{latestPoint.gaze || "Neutral"}</div>
                       <div className="sd-meta">Attention: {latestPoint.attention || 50}%</div>
                     </div>
-                    <div style={{ marginLeft: "auto", fontSize: 22, fontWeight: 800, color: wellbeingColor(latestPoint.wellbeing || 50), fontFamily: "Poppins, sans-serif" }}>
+                    <div ref={(el) => bindElStyle(el, { marginLeft: "auto", fontSize: 22, fontWeight: 800, color: wellbeingColor(latestPoint.wellbeing || 50), fontFamily: "Poppins, sans-serif" })}>
                       {latestPoint.wellbeing || 50}%
                     </div>
                   </div>
@@ -995,21 +1001,21 @@ const BehaviourIntelligenceDashboard = () => {
               )}
 
               {/* School summary */}
-              <div style={{ marginTop: 14, flex: 1 }}>
-                <div className="sd-gaze-label" style={{ marginBottom: 8 }}>School Summary</div>
+              <div ref={(el) => bindElStyle(el, { marginTop: 14, flex: 1 })}>
+                <div className="sd-gaze-label" ref={(el) => bindElStyle(el, { marginBottom: 8 })}>School Summary</div>
                 {(report?.overall_stats?.schools || []).map(school => {
                   const sp  = persons.filter(p => p.school === school);
                   const avg = sp.length ? Math.round(sp.reduce((a, p) => a + p.average_wellbeing, 0) / sp.length) : 0;
                   return (
                     <div key={school} className="sd-school-row">
-                      <span style={{ color: BRAND.textBody, fontWeight: 500 }}>{school}</span>
-                      <span style={{ fontWeight: 700, color: wellbeingColor(avg) }}>{avg}% avg</span>
+                      <span ref={(el) => bindElStyle(el, { color: BRAND.textBody, fontWeight: 500 })}>{school}</span>
+                      <span ref={(el) => bindElStyle(el, { fontWeight: 700, color: wellbeingColor(avg) })}>{avg}% avg</span>
                     </div>
                   );
                 })}
                 <div className="sd-school-row">
-                  <span style={{ color: BRAND.textBody, fontWeight: 500 }}>At-risk persons</span>
-                  <span style={{ fontWeight: 700, color: BRAND.red }}>{atRiskCount}</span>
+                  <span ref={(el) => bindElStyle(el, { color: BRAND.textBody, fontWeight: 500 })}>At-risk persons</span>
+                  <span ref={(el) => bindElStyle(el, { fontWeight: 700, color: BRAND.red })}>{atRiskCount}</span>
                 </div>
               </div>
             </div>
@@ -1028,15 +1034,15 @@ const BehaviourIntelligenceDashboard = () => {
 
       {/* ── NAV ──────────────────────────────────────────────────────────── */}
       <nav className="sd-nav">
-        <img src={icon} alt="Sentio Mind" style={{ width: 210, height: 70 }} />
-        <div style={{ flex: 1 }} />
+        <img src={icon} alt="Sentio Mind" ref={(el) => bindElStyle(el, { width: 210, height: 70 })} />
+        <div ref={(el) => bindElStyle(el, { flex: 1 })} />
         <div className="sd-nav-items">
         {navItems.map(item => (
             <button
               key={item}
               className={`sd-nav-btn${activeNav === item ? " active" : ""}`}
               onClick={() => setActiveNav(item)}
-              style={{ position: "relative" }}
+              ref={(el) => bindElStyle(el, { position: "relative" })}
             >
               {item}
               {item === "Alerts" && atRiskCount > 0 && (
@@ -1046,7 +1052,7 @@ const BehaviourIntelligenceDashboard = () => {
           ))}
         </div>
 
-        <div style={{ flex: 1 }} />
+        <div ref={(el) => bindElStyle(el, { flex: 1 })} />
         <div className="sd-user-area">
           <div className="sd-tracked-pill">
             <div className="sd-live-dot" />

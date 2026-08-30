@@ -1,0 +1,468 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:global(*),
+:global(*::before),
+:global(*::after) {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:global(html),
+:global(body),
+:global(#root) {
+  height: 100%;
+}
+
+/* ── Headline gradient: light aqua → light teal, very bright ── */
+.ctaGradientText {
+  background: linear-gradient(90deg, #7ffff4, #a0f0e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.root {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-image: url('./assets/hope.jpg');
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+}
+
+.layout {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6%;
+  gap: 40px;
+}
+
+.left {
+  flex: 1;
+  color: #fff;
+  max-width: 560px;
+}
+
+.headline {
+  font-size: clamp(42px, 5vw, 68px);
+  font-weight: 800;
+  line-height: 1.10;
+  color: #fff;
+  margin-bottom: 26px;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+}
+
+.sub {
+  font-size: clamp(15px, 1.4vw, 18px);
+  line-height: 1.80;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 440px;
+  font-weight: 400;
+  margin-bottom: 40px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.socials {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.social {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  text-decoration: none;
+  transition: background 0.18s, transform 0.18s;
+}
+
+.social:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+}
+
+.social svg {
+  width: 19px;
+  height: 19px;
+}
+
+.card {
+  width: 420px;
+  flex-shrink: 0;
+  background: rgba(28, 30, 38, 0.82);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 44px 40px 38px;
+  color: #fff;
+}
+
+.cardTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+}
+
+.cardSub {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.50);
+  margin-bottom: 28px;
+  font-weight: 400;
+}
+
+.oauthRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.oauthBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.oauthBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.field {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.fieldLogo {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.38);
+  display: flex;
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  padding: 13px 44px 13px 42px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.input:focus {
+  border-color: rgba(61, 214, 208, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.inputForgot {
+  padding-left: 14px;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.38);
+  display: flex;
+  padding: 2px;
+  transition: color 0.15s;
+}
+
+.eyeBtn:hover {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  margin-top: 2px;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  accent-color: #3dd6d0;
+  cursor: pointer;
+}
+
+.forgot {
+  font-size: 13px;
+  color: #7ad4ff;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.forgot:hover {
+  color: #b8e8ff;
+  text-decoration: underline;
+}
+
+.forgotBack {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 13px;
+  margin-bottom: 16px;
+  padding: 0;
+}
+
+.error {
+  font-size: 13px;
+  color: #ff9090;
+  background: rgba(255, 60, 60, 0.10);
+  border: 1px solid rgba(255, 60, 60, 0.22);
+  border-radius: 9px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.errorNoTop {
+  margin-top: 0;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #4a8a94 0%, #3dd6d0 100%);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.12s;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSpinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cardFooter {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.40);
+}
+
+.cardFooter a {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cardFooter a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.logoImg {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.logoText {
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.logoSentio {
+  color: #7ffff4;
+}
+
+.logoMind {
+  color: #a0f0e8;
+}
+
+.forgotSent {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.forgotSentIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(61, 214, 208, 0.12);
+  border: 1.5px solid rgba(61, 214, 208, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.forgotSentTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.forgotSentText {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.loadingScreen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 16px;
+  gap: 12px;
+}
+
+.loadingSpinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@media (max-width: 820px) {
+  .layout {
+    flex-direction: column;
+    padding: 32px 6%;
+    align-items: flex-start;
+  }
+
+  .card {
+    width: 100%;
+  }
+}

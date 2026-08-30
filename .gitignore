@@ -78,3 +78,60 @@ Best-Face/**/*.pth
 *.log
 *.tmp
 *.temp
+# Python caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+BackendVirtualEnv/
+**/BackendVirtualEnv/
+**/venv/
+**/.venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Coverage
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code / Cursor
+.vscode/
+.cursor/
+
+# Environment files
+.env
+.env.*
+!.env.example
+# Node.js
+node_modules/
+**/node_modules/
+
+# React build outputs
+build/
+dist/
+
+# Test coverage
+coverage/
+
+# Cache
+.cache/
+.eslintcache
+
+# npm/yarn logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*

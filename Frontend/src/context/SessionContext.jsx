@@ -1,3 +1,5 @@
+// SECURITY: access tokens are stored in memory only (not localStorage/sessionStorage). Refresh tokens should be in httpOnly cookies set by the server
+
 import {
   createContext,
   useContext,
@@ -10,8 +12,10 @@ import {
   logout as apiLogout,
   refreshSession,
   fetchCurrentUser,
+  verifyMfaLogin,
   setAccessToken,
   subscribeAccessToken,
+  getApplication,
 } from "../services/authApi";
 import { getDashboardPathForUser } from "../utils/roleRoutes";
 
@@ -20,6 +24,10 @@ const SessionContext = createContext(null);
 export function SessionProvider({ children }) {
   const [user, setUser] = useState(null);
   const [initializing, setInitializing] = useState(true);
+  // Which registered application this session was opened for ("sentio-b2b" or
+  // "sentio-mobile"). The auth backend binds the token and the refresh family
+  // to it; we only mirror it so the console can render the right section.
+  const [application, setApplicationState] = useState(getApplication());
 
   const loadUser = useCallback(async () => {
     const profile = await fetchCurrentUser();
@@ -33,6 +41,7 @@ export function SessionProvider({ children }) {
     async function restore() {
       try {
         await refreshSession();
+        if (!cancelled) setApplicationState(getApplication());
         if (!cancelled) await loadUser();
       } catch {
         setAccessToken(null);
@@ -56,6 +65,13 @@ export function SessionProvider({ children }) {
   const loginWithCredentials = useCallback(
     async (email, password, remember = false) => {
       const result = await apiLogin(email, password, remember);
+      if (result.mfa_required) {
+        return {
+          mfaRequired: true,
+          pendingToken: result.pending_token,
+        };
+      }
+      setApplicationState(getApplication());
       setUser(result.user);
       return {
         user: result.user,
@@ -65,8 +81,19 @@ export function SessionProvider({ children }) {
     []
   );
 
+  const completeMfaLogin = useCallback(async (pendingToken, totpCode) => {
+    const result = await verifyMfaLogin(pendingToken, totpCode);
+    setApplicationState(getApplication());
+    setUser(result.user);
+    return {
+      user: result.user,
+      dashboardPath: getDashboardPathForUser(result.user),
+    };
+  }, []);
+
   const logout = useCallback(async () => {
     await apiLogout();
+    setApplicationState(getApplication());
     setUser(null);
   }, []);
 
@@ -76,9 +103,11 @@ export function SessionProvider({ children }) {
     <SessionContext.Provider
       value={{
         user,
+        application,
         isAuthenticated,
         initializing,
         loginWithCredentials,
+        completeMfaLogin,
         logout,
         refreshUser: loadUser,
       }}

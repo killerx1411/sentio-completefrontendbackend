@@ -1,9 +1,26 @@
+# Stakeholder / authentication service — the B2B/auth image (b2bapi.sentiomind.in).
+#   pip install -r requirements.txt        -> auth service only (wsgi_auth:app)
+#   pip install -r requirements-cv.txt     -> adds the CV/analysis stack
+#   pip install -r requirements-dev.txt    -> adds the test toolchain
+#
+# Nothing here pulls in OpenCV, TensorFlow, MediaPipe or dlib. The separation is
+# enforced by tests/test_service_boundary.py — keep it that way.
+#
+# Every version is pinned: an unpinned production image is a different image on
+# every rebuild, so a rollback cannot reproduce the revision it rolls back to.
 flask==3.0.0
-opencv-python==4.8.1.78
-numpy==1.24.3
-mediapipe==0.10.8
-deepface==0.0.79
-tensorflow==2.15.0
-face-recognition==1.3.0
-dlib==19.24.2
-Pillow==10.1.0
+werkzeug==3.1.3
+flask-cors==5.0.1
+gunicorn==23.0.0
+psycopg2-binary==2.9.10
+python-dotenv==1.1.1
+PyJWT==2.12.1
+bcrypt==5.0.0
+email-validator==2.3.0
+Flask-Talisman==1.1.0
+Flask-Limiter==4.1.1
+limits==5.8.0
+redis==5.2.1
+pyotp==2.10.0
+qrcode[pil]==8.2
+cryptography==50.0.1

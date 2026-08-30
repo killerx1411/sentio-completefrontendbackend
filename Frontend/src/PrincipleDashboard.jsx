@@ -11,7 +11,7 @@ import LogoutButton from "./components/LogoutButton";
 import { useSession } from "./context/SessionContext";
 import icon from "./assets/icon.png";
 // ─── Backend routing (from Code 1) ───────────────────────────────────────────
-import { apiFetch } from "./utils/api";
+import { authFetch } from "./services/authApi";
 
 // ─── Brand tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -540,8 +540,7 @@ export default function PrincipalDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch("/get_report");
-      const data = await res.json();
+      const data = await authFetch("/analysis/report");
       if (data.success && data.report) {
         setReport(data.report);
         const schools = data.report.overall_stats?.schools || [];

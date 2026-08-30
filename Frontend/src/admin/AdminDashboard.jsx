@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [success, setSuccess] = useState("");
   const [selectedRoles, setSelectedRoles] = useState({});
   const [busyId, setBusyId] = useState(null);
+  const [rejectTarget, setRejectTarget] = useState(null);
 
   async function load() {
     setLoading(true);
@@ -47,6 +48,10 @@ export default function AdminDashboard() {
       setError("Select a role before approving.");
       return;
     }
+    if (!STAKEHOLDER_ROLES.includes(role)) {
+      setError("Invalid role selected.");
+      return;
+    }
     setBusyId(userId);
     setError("");
     setSuccess("");
@@ -61,8 +66,11 @@ export default function AdminDashboard() {
     }
   }
 
+  function requestReject(user) {
+    setRejectTarget(user);
+  }
+
   async function handleReject(userId) {
-    if (!window.confirm("Reject this signup request?")) return;
     setBusyId(userId);
     setError("");
     setSuccess("");
@@ -160,7 +168,7 @@ export default function AdminDashboard() {
                   type="button"
                   className="admin-btn danger-outline"
                   disabled={busyId === u.id}
-                  onClick={() => handleReject(u.id)}
+                  onClick={() => requestReject(u)}
                 >
                   Reject
                 </button>
@@ -168,6 +176,40 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))
+      )}
+
+      {rejectTarget && (
+        <div className="admin-modal-overlay">
+          <div className="admin-card admin-modal">
+            <h3 className="admin-section-title">Reject signup</h3>
+            <p className="admin-page-sub">
+              Reject the signup request for <strong>{rejectTarget.full_name}</strong> (
+              {rejectTarget.email})?
+            </p>
+            <div className="admin-modal-actions">
+              <button
+                type="button"
+                className="admin-btn"
+                onClick={() => setRejectTarget(null)}
+                disabled={busyId === rejectTarget.id}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="admin-btn danger"
+                onClick={async () => {
+                  const id = rejectTarget.id;
+                  setRejectTarget(null);
+                  await handleReject(id);
+                }}
+                disabled={busyId === rejectTarget.id}
+              >
+                {busyId === rejectTarget.id ? "Processing…" : "Reject signup"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

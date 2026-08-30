@@ -1,0 +1,543 @@
+/* Mobile Admin section.
+ *
+ * This is NOT a second design system. Layout, cards, tables, buttons, badges,
+ * tabs and modals all come from admin.css; the rules below only add the few
+ * elements the B2B pages never needed (definition grids, review checklists,
+ * filter bars) and stay on the same palette:
+ *   #0f4c5c deep teal · #2ec4b6 teal · #64748b muted · #d5e3e8 border
+ */
+
+.mobile-muted {
+  color: #64748b;
+}
+
+.mobile-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  color: #475569;
+  word-break: break-all;
+}
+
+/* ── Status pills ─────────────────────────────────────────────────────── */
+
+.mobile-status {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.mobile-status.ok {
+  background: rgba(46, 196, 182, 0.15);
+  color: #0d9488;
+}
+
+.mobile-status.warn {
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
+}
+
+.mobile-status.bad {
+  background: rgba(185, 28, 28, 0.1);
+  color: #b91c1c;
+}
+
+.mobile-status.muted {
+  background: #eef2f4;
+  color: #64748b;
+}
+
+.mobile-status-code {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.mobile-unsafe-link {
+  color: #b91c1c;
+  word-break: break-all;
+}
+
+/* ── Filters ──────────────────────────────────────────────────────────── */
+
+.mobile-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.25rem;
+}
+
+.mobile-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.mobile-filter-search {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 1 1 260px;
+}
+
+.mobile-input {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #d5e3e8;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1e293b;
+  background: #fff;
+  min-width: 150px;
+}
+
+.mobile-filter-search .mobile-input {
+  flex: 1;
+}
+
+.mobile-input:focus {
+  outline: 2px solid rgba(46, 196, 182, 0.4);
+  outline-offset: 1px;
+}
+
+.mobile-textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #d5e3e8;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: #1e293b;
+  resize: vertical;
+}
+
+/* ── Pagination ───────────────────────────────────────────────────────── */
+
+.mobile-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+  font-size: 0.85rem;
+}
+
+.mobile-pagination-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ── Definition grids ─────────────────────────────────────────────────── */
+
+.mobile-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.9rem 1.5rem;
+}
+
+.mobile-fields.one-col {
+  grid-template-columns: 1fr;
+}
+
+.mobile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.mobile-field-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.mobile-field-value {
+  color: #1e293b;
+  font-size: 0.9rem;
+  word-break: break-word;
+}
+
+/* ── Expert detail: documents-dominant two-column layout ──────────────── */
+
+/* Documents are what a counsellor review turns on, so they hold the wide
+ * column. They also come FIRST in the DOM, which is the stacking order the
+ * single-column breakpoint below inherits for free. */
+.mobile-expert-layout {
+  display: grid;
+  /* minmax(0, …) rather than a bare fraction: without it a long bio or an
+   * unbroken URL sets the track's min-content width and the whole page scrolls
+   * sideways. */
+  grid-template-columns: minmax(0, 34fr) minmax(0, 66fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.mobile-expert-info,
+.mobile-expert-docs {
+  min-width: 0;
+  grid-row: 1;
+}
+
+.mobile-expert-info {
+  grid-column: 1;
+}
+
+.mobile-expert-docs {
+  grid-column: 2;
+}
+
+@media (max-width: 900px) {
+  .mobile-expert-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Back to DOM order: documents, then everything else. */
+  .mobile-expert-info,
+  .mobile-expert-docs {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+/* ── Bio ──────────────────────────────────────────────────────────────── */
+
+.mobile-bio {
+  margin-top: 0.25rem;
+}
+
+.mobile-bio-body {
+  /* A comfortable measure; the card is narrower than this on most screens, so
+   * it only bites on very wide displays. */
+  max-width: 68ch;
+}
+
+.mobile-bio-body p {
+  margin: 0.5rem 0 0;
+  color: #334155;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  /* The expert's own single newlines survive; blank lines already became
+   * separate paragraphs. */
+  white-space: pre-line;
+  /* Wrap normally, but never let one long word or pasted URL widen the card. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.mobile-bio-body p:first-child {
+  margin-top: 0.3rem;
+}
+
+/* ── Weekly availability ──────────────────────────────────────────────── */
+
+.mobile-availability {
+  margin-top: 0.4rem;
+}
+
+.mobile-availability-tz {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.mobile-week {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #e8f0f2;
+}
+
+.mobile-week-day {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e8f0f2;
+  font-size: 0.875rem;
+}
+
+.mobile-week-name {
+  color: #0f4c5c;
+  font-weight: 600;
+}
+
+.mobile-week-day.off .mobile-week-name {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.mobile-week-slots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.mobile-slot {
+  background: rgba(46, 196, 182, 0.12);
+  color: #0d7d74;
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mobile-week-extras {
+  margin-top: 1rem;
+}
+
+/* ── Documents ────────────────────────────────────────────────────────── */
+
+.mobile-doc-note {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0.75rem 0;
+}
+
+.mobile-doc-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.mobile-doc {
+  border: 1px solid #d5e3e8;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  background: #fbfdfd;
+  min-width: 0;
+}
+
+.mobile-doc.missing {
+  border-style: dashed;
+  background: #fafbfc;
+}
+
+.mobile-doc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mobile-doc-name {
+  font-weight: 600;
+  color: #0f4c5c;
+  font-size: 0.95rem;
+}
+
+.mobile-doc-category {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  background: #eef2f4;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.mobile-doc-head .mobile-status {
+  margin-left: auto;
+}
+
+.mobile-doc-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.6rem 1.25rem;
+  margin-top: 0.7rem;
+}
+
+.mobile-doc-actions {
+  margin-top: 0.7rem;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.mobile-rejection {
+  margin-top: 0.9rem;
+  border-left: 3px solid #b91c1c;
+  background: rgba(185, 28, 28, 0.06);
+  border-radius: 0 6px 6px 0;
+  padding: 0.6rem 0.85rem;
+}
+
+.mobile-rejection p {
+  margin: 0.25rem 0 0;
+  color: #7f1d1d;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* ── Questionnaire ────────────────────────────────────────────────────── */
+
+.mobile-qa {
+  margin: 0;
+}
+
+.mobile-qa-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e8f0f2;
+}
+
+.mobile-qa-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-qa-item dt {
+  font-weight: 600;
+  color: #0f4c5c;
+  font-size: 0.875rem;
+}
+
+.mobile-qa-item dd {
+  margin: 0.3rem 0 0;
+  color: #334155;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.mobile-unmatched {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #d5e3e8;
+}
+
+/* ── Review checklist / actions ───────────────────────────────────────── */
+
+.mobile-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.mobile-checklist li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.mobile-check-mark {
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.mobile-checklist li.ok .mobile-check-mark {
+  color: #0d9488;
+}
+
+.mobile-checklist li.bad .mobile-check-mark {
+  color: #b91c1c;
+}
+
+.mobile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.mobile-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Review history ───────────────────────────────────────────────────── */
+
+.mobile-history {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-history li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e8f0f2;
+  font-size: 0.875rem;
+  color: #334155;
+}
+
+.mobile-history li:last-child {
+  border-bottom: none;
+}
+
+.mobile-history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+
+.mobile-reason {
+  margin-top: 0.35rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid #d5e3e8;
+  color: #475569;
+}
+
+/* ── Dashboard ────────────────────────────────────────────────────────── */
+
+.mobile-stat-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mobile-stat-link:hover {
+  border-color: #2ec4b6;
+}
+
+.mobile-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.mobile-breakdown {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #e8f0f2;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.mobile-breakdown li:last-child {
+  border-bottom: none;
+}
+
+.mobile-notes {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}

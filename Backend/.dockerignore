@@ -1,0 +1,53 @@
+# Keep the auth image small and free of secrets and of the CV stack.
+
+# --- secrets: these must come from Secret Manager, never from a layer -------
+.env
+.env.*
+!.env.example
+
+# --- the CV / analysis system (requirements-cv.txt) ------------------------
+# Excluded on purpose: the auth image must not be able to import it.
+cv_analysis/
+requirements-cv.txt
+test_db.py
+testpg.py
+input_videos/
+profiles/
+snapshots/
+analysis_results/
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# --- tests and dev tooling -------------------------------------------------
+tests/
+pytest.ini
+requirements-dev.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# --- virtualenvs and caches ------------------------------------------------
+BackendVirtualEnv/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# --- vcs, docs, editors ----------------------------------------------------
+.git/
+.github/
+.vscode/
+.idea/
+.cursor/
+*.md
+!README.md
+nginx/
+*.log
+*.txt
+!requirements.txt
