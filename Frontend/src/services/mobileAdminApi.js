@@ -196,6 +196,57 @@ export function fetchInterventionRules(params) {
   return request("/content/intervention-rules", { params });
 }
 
+/* ── Group sessions ─────────────────────────────────────── */
+
+/** The review queue. Counsellors propose a group session in the mobile app;
+ *  nothing is visible to users until a super admin approves it here. */
+export function fetchGroupSessions(params) {
+  return request("/group-sessions", { params });
+}
+
+export function fetchGroupSession(sessionId) {
+  return request(`/group-sessions/${sessionId}`);
+}
+
+export function fetchGroupSessionRegistrations(sessionId, params) {
+  return request(`/group-sessions/${sessionId}/registrations`, { params });
+}
+
+/** Publishing opens the waitlist. `meeting_url` may be set here or later, but
+ *  the T-24h dispatch has nothing to send until one exists. */
+export function approveGroupSession(sessionId, body) {
+  return request(`/group-sessions/${sessionId}/approve`, { method: "POST", body });
+}
+
+export function rejectGroupSession(sessionId, reason) {
+  return request(`/group-sessions/${sessionId}/reject`, {
+    method: "POST",
+    body: { reason },
+  });
+}
+
+export function requestGroupSessionChanges(sessionId, reason) {
+  return request(`/group-sessions/${sessionId}/request-changes`, {
+    method: "POST",
+    body: { reason },
+  });
+}
+
+/** Cancels an approved session and mails everyone holding a place. */
+export function cancelGroupSession(sessionId, reason) {
+  return request(`/group-sessions/${sessionId}/cancel`, {
+    method: "POST",
+    body: { reason },
+  });
+}
+
+export function setGroupSessionMeetingLink(sessionId, body) {
+  return request(`/group-sessions/${sessionId}/meeting-link`, {
+    method: "PUT",
+    body,
+  });
+}
+
 /* ── Audit, admins, settings, health, dashboard ─────────────────────────── */
 
 export function fetchMobileAudit(params) {

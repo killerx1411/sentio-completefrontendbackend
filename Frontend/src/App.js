@@ -32,6 +32,7 @@ import MobileRisk from "./mobile/pages/MobileRisk";
 import MobileContent from "./mobile/pages/MobileContent";
 import MobileExercises from "./mobile/pages/MobileExercises";
 import MobileSessions from "./mobile/pages/MobileSessions";
+import MobileGroupSessions from "./mobile/pages/MobileGroupSessions";
 import MobilePayments from "./mobile/pages/MobilePayments";
 import MobileSubscriptions from "./mobile/pages/MobileSubscriptions";
 import MobileAdmins from "./mobile/pages/MobileAdmins";
@@ -155,6 +156,7 @@ const router = createBrowserRouter(
           <Route path="content" element={<MobileContent />} />
           <Route path="exercises" element={<MobileExercises />} />
           <Route path="sessions" element={<MobileSessions />} />
+          <Route path="group-sessions" element={<MobileGroupSessions />} />
           <Route path="payments" element={<MobilePayments />} />
           <Route path="subscriptions" element={<MobileSubscriptions />} />
           <Route path="admins" element={<MobileAdmins />} />

@@ -15,6 +15,13 @@ export const MOBILE_NAV = [
   { to: "/admin/mobile/content", label: "Content & interventions", permission: "mobile.content.read" },
   { to: "/admin/mobile/exercises", label: "Exercises", permission: "mobile.content.read" },
   { to: "/admin/mobile/sessions", label: "Sessions", permission: "mobile.reports.read" },
+  // Reading the queue is a content read; approving is checked server-side and
+  // additionally needs mobile.users.approve plus the super admin role.
+  {
+    to: "/admin/mobile/group-sessions",
+    label: "Group sessions",
+    permission: "mobile.content.read",
+  },
   { to: "/admin/mobile/payments", label: "Payments", permission: "mobile.reports.read" },
   { to: "/admin/mobile/subscriptions", label: "Plans & subscriptions", permission: "mobile.reports.read" },
   // `/api/admin/admins` and `/api/admin/health` authorize on identity alone.

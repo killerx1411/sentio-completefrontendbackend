@@ -10,12 +10,20 @@ const TONE = {
   none: "muted",
   rejected: "bad",
   inactive: "bad",
+  // group_sessions.status / group_session_registrations.status
+  approved: "ok",
+  confirmed: "ok",
+  changes_requested: "warn",
+  waitlisted: "warn",
+  cancelled: "bad",
+  completed: "muted",
 };
 
 const LABEL = {
   pending_review: "Pending review",
   pending_verification: "Pending verification",
   none: "No profile",
+  changes_requested: "Changes requested",
 };
 
 export default function StatusBadge({ value, fallback = "—" }) {

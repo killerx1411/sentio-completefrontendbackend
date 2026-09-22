@@ -1,0 +1,36 @@
+# Local development database for the auth authority.
+#
+# The mobile backend already runs its own Postgres (sentio_postgres, host port
+# 5444) and the two are separate systems by design -- this one holds the
+# auth_enabler schema: users, roles, permissions, sessions, refresh tokens,
+# audit. Kept on its own port and its own volume so neither can clobber the
+# other, and so dropping one to start over leaves the other alone.
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#
+# Dev only. Production reads SENTIO_DB_URL from the deployed environment and
+# never from this file.
+
+services:
+  auth-postgres:
+    image: pgvector/pgvector:pg16
+    container_name: sentio_auth_postgres
+    environment:
+      POSTGRES_USER: ${AUTH_DB_USER:-sentio_auth}
+      # A documented local default, not a secret: this container holds no real
+      # data and is not reachable off this machine. Override it in .env if you
+      # want something else, and keep SENTIO_DB_URL in step.
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:-sentio_local_dev}
+      POSTGRES_DB: ${AUTH_DB_NAME:-sentio}
+    ports:
+      - "5433:5432"
+    volumes:
+      - sentio_auth_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sentio_auth_pg_data:
