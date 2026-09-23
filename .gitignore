@@ -153,3 +153,10 @@ build/
 /profilerecon/
 /sentio-backend-ui/
 /auth-backend/
+.pre-commit-config.yaml
+CODEBASE_MAP.md
+DEPLOYMENT_PRODUCTION.md
+crypt.py
+final_gcp.md
+run_face_pipeline.ps1
+run_face_pipeline.py
