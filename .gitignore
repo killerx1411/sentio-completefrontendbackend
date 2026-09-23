@@ -145,3 +145,11 @@ build/
 
 # Build archives
 *.zip
+
+/Best-Face/
+/devcode/
+/LandingPage/
+/profile-clustering/
+/profilerecon/
+/sentio-backend-ui/
+/auth-backend/
