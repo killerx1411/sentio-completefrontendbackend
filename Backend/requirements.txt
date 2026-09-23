@@ -8,7 +8,7 @@
 #
 # Every version is pinned: an unpinned production image is a different image on
 # every rebuild, so a rollback cannot reproduce the revision it rolls back to.
-flask==3.0.0
+flask==3.1.3
 werkzeug==3.1.3
 flask-cors==5.0.1
 gunicorn==23.0.0
