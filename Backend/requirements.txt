@@ -20,7 +20,7 @@ email-validator==2.3.0
 Flask-Talisman==1.1.0
 Flask-Limiter==4.1.1
 limits==5.8.0
-redis==5.2.1
+redis==8.1.0
 pyotp==2.10.0
 qrcode[pil]==8.2
 cryptography==50.0.1
