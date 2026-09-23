@@ -21,6 +21,11 @@ the dependency boundary and the endpoint classification are documented in
 This document is written to be self-contained: an engineer (or an LLM) with only this file
 should be able to reason about the whole Backend folder without reading every source file.
 
+> **Just want to run it?** Go to [§9 Running it](#9-running-it) — prerequisites, database setup,
+> first admin user, Docker, tests and troubleshooting, in order.
+> **Deploying to production?** Use [`../DEPLOYMENT_PRODUCTION.md`](../DEPLOYMENT_PRODUCTION.md)
+> (GCP Cloud Run + Cloud SQL + GoDaddy DNS). That is the runbook; §9 is the developer guide.
+
 ---
 
 ## 1. Quick facts
@@ -36,8 +41,8 @@ should be able to reason about the whole Backend folder without reading every so
 | Cache / limits | Redis (Flask-Limiter storage + optional helper store), in-memory fallback |
 | Auth model | Short-lived JWT access token (header) + opaque rotating refresh token (HttpOnly cookie) + double-submit CSRF |
 | Authorization | RBAC (roles → permissions) **plus** row-level scope (GLOBAL / SCHOOL / CLASS / …) |
-| Dev port | 5001 (`python wsgi_auth.py` or `python test_db.py`); CV standalone on `CV_PORT` 5002 |
-| Prod port | 5000 (gunicorn, behind nginx) |
+| Dev port | `PORT`, default 5001 (`python wsgi_auth.py`); `.env.local.example` sets 5000 to match the frontend. CV standalone on `CV_PORT` 5002 |
+| Prod port | 8080 — Cloud Run injects `PORT` and gunicorn binds `0.0.0.0:$PORT`. Do not set `PORT` yourself |
 | Requirements | `requirements.txt` (auth) + `requirements-cv.txt` (CV stack) |
 
 ---
@@ -198,6 +203,7 @@ requires `MFA_ENCRYPTION_KEY` to be set in any non-test env. On success it write
 | `MFA_ENCRYPTION_KEY` | SHA-256'd → base64 → Fernet key that encrypts TOTP secrets at rest. |
 | `SENTIO_DB_URL` | Postgres DSN. |
 | `SENTIO_DB_SSLMODE` | `require` (default) / `disable` / `prefer`. |
+| `SENTIO_DB_POOL_MIN` / `SENTIO_DB_POOL_MAX` | psycopg2 pool bounds, **per gunicorn worker** (`preload_app=False`). Defaults 2 / 10. One Cloud Run instance holds up to `GUNICORN_WORKERS x SENTIO_DB_POOL_MAX`, and a rollout briefly doubles it — keep the product under the Cloud SQL tier's `max_connections`. Non-integer or `< 1` values log a warning and fall back to the default. |
 | `RATELIMIT_STORAGE_URI` | Flask-Limiter storage; default `redis://localhost:6379/1`. **Must** be Redis in prod — with `memory://` each gunicorn worker enforces limits independently, multiplying the effective limit by worker count. |
 | `REDIS_URL` | Optional store for `helpers/redis_client.py`; falls back to an in-process dict. |
 | `ALLOWED_ORIGINS` | CSV. Defaults to `https://product.sentiomind.in`, or the localhost:3000 pair when `FLASK_ENV=development`. |
@@ -769,69 +775,255 @@ authoritative, current list.
 
 ## 9. Running it
 
-### Local development
+This section is the complete start-up procedure. Nothing else in this file is required to get
+the service running.
+
+### 9.0 Prerequisites
+
+| Requirement | Version / value | Verify |
+|---|---|---|
+| Python | 3.11 or 3.12 (the production image is 3.12-slim) | `python --version` |
+| PostgreSQL | 14+ (production runs 16) | `psql --version` |
+| Redis | optional locally, **mandatory in production** | `redis-cli ping` |
+| Docker | only for building the production image | `docker --version` |
+| C build tools | not needed — every dependency ships a wheel | — |
+
+The auth service needs **PostgreSQL reachable before it starts**. `create_auth_app()` calls
+`init_auth_db()` at import time; a missing database logs a warning and retries on the first
+request, but every authenticated call will fail until it is up.
+
+### 9.1 Local development — auth service (the usual case)
 
 ```powershell
 cd Backend
-copy .env.local.example .env.local
-# edit .env.local (SENTIO_DB_URL, JWT_SECRET_KEY, MFA_ENCRYPTION_KEY, …)
-# Set up PostgreSQL in pgAdmin — see .env.local.example (bottom section)
 
-pip install -r requirements.txt          # stakeholder/auth only
-python wsgi_auth.py                      # auth service, no CV libraries needed
+# 1. Virtualenv
+python -m venv BackendVirtualEnv
+.\BackendVirtualEnv\Scripts\Activate.ps1        # Linux/macOS: source BackendVirtualEnv/bin/activate
 
-pip install -r requirements-cv.txt       # add the CV stack
-python -m cv_analysis.app                # CV service on CV_PORT (5002)
-python test_db.py                        # or both in one process on PORT (5001)
+# 2. Dependencies — auth service only, no CV stack
+pip install -r requirements.txt
+
+# 3. Configuration
+copy .env.local.example .env.local              # Linux/macOS: cp
+#    Edit .env.local and set at minimum:
+#      SENTIO_DB_URL      postgresql://sentio_local:PASSWORD@localhost:5432/sentio_mind_db
+#      JWT_SECRET_KEY     >= 32 chars
+#      MFA_ENCRYPTION_KEY 64 hex chars
+#    Generate the two secrets:
+python -c "import secrets; print('JWT_SECRET_KEY=' + secrets.token_urlsafe(48))"
+python -c "import secrets; print('MFA_ENCRYPTION_KEY=' + secrets.token_hex(32))"
+
+# 4. Database — see 9.2 below (one time)
+
+# 5. Verify the DB connection before starting the app
+python -c "from auth.db_connection import init_auth_db; init_auth_db(); print('db ok')"
+
+# 6. Start
+python wsgi_auth.py
 ```
 
-`.env` holds production values; `.env.local` overrides it and is gitignored.
-`FLASK_ENV=development` gives localhost CORS, non-`Secure` cookies, and relaxed checks.
-Default port is **5001** (`PORT` overrides).
+Expected output ends with a line like
+`Sentio stakeholder/auth starting | env=development | jwt_expiry=15min | cors_origins=[...]`,
+then Flask serving on the port. Confirm:
 
-### Production
+```powershell
+curl http://localhost:5000/health         # {"service":"Sentio Auth API","status":"healthy"}
+curl http://localhost:5000/health/ready   # {"checks":{"database":"ok",...},"status":"ready"}
+```
 
-Never run `python test_db.py` in production — Flask's built-in server is single-process and not
-hardened for concurrent/untrusted traffic. Use Gunicorn behind nginx (`nginx/nginx.conf` proxies to
-`127.0.0.1:5000`):
+**Port.** `python wsgi_auth.py` binds `PORT`, default **5001**. `.env.local.example` sets
+`PORT=5000`, which is what `Frontend/.env.development` expects — keep it at 5000 unless you also
+change the frontend.
+
+**Config precedence.** `auth/env_loader.py` loads `.env` first, then `.env.local` on top
+(`override=True`). A real shell/CI environment variable always wins over both. When
+`FLASK_ENV=production` is set in the *real* environment, `.env.local` is skipped entirely — a
+developer file can never override a production secret.
+
+`FLASK_ENV=development` gives localhost CORS, non-`Secure` cookies, `memory://` rate limiting
+and relaxed password-breach checking. None of that is permitted in production
+(`auth/config.py: validate_config`).
+
+### 9.2 Database setup (one time)
+
+Create the role and database, then run the SQL in this order:
+
+```powershell
+# psql route (any platform)
+psql -U postgres -c "CREATE DATABASE sentio_mind_db;"
+psql -U postgres -c "CREATE ROLE sentio_local LOGIN PASSWORD 'your_password';"
+
+psql -U postgres -d sentio_mind_db -f auth/db/schema.sql     # tables, triggers, schema auth_enabler
+psql -U postgres -d sentio_mind_db -f auth/db/seed.sql       # roles + permissions ONLY, no users
+psql -U postgres -d sentio_mind_db -f MIGRATIONS.sql         # idempotent security migrations
+psql -U postgres -d sentio_mind_db -f auth/db/migrate_password_reset.sql
+psql -U postgres -d sentio_mind_db -f auth/db/migrate_signup_flow.sql
+
+# Mobile Admin roles + mobile.* permissions (Python, needs SENTIO_DB_URL set)
+python auth/db/migrate_mobile_admin.py
+
+# Grants for the application role
+psql -U postgres -d sentio_mind_db -c "
+  GRANT ALL ON SCHEMA auth_enabler TO sentio_local;
+  GRANT ALL ON ALL TABLES IN SCHEMA auth_enabler TO sentio_local;
+  GRANT ALL ON ALL SEQUENCES IN SCHEMA auth_enabler TO sentio_local;
+  ALTER DEFAULT PRIVILEGES IN SCHEMA auth_enabler GRANT ALL ON TABLES TO sentio_local;
+  ALTER DEFAULT PRIVILEGES IN SCHEMA auth_enabler GRANT ALL ON SEQUENCES TO sentio_local;"
+```
+
+The pgAdmin click-through equivalent is documented at the bottom of `.env.local.example`.
+
+Every migration is idempotent (`CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`), so
+re-running the set is safe and is the normal upgrade path on an existing database.
+
+### 9.3 First admin user
+
+`seed.sql` deliberately creates **no users and no default passwords**. Create the first Super
+Admin once, then manage everyone else from the console:
+
+```powershell
+# 1. Generate a bcrypt hash with the app's own helper (cost and 72-byte cap must match)
+python -c "from auth.helpers.password_helper import hash_password; print(hash_password('TempPassw0rd!23'))"
+```
+
+```sql
+-- 2. Insert the user and grant the role
+INSERT INTO auth_enabler.users (full_name, email, password_hash, status, registration_status, is_first_login)
+VALUES ('Platform Owner', 'owner@sentiomind.in', '<bcrypt-hash>', 'active', 'APPROVED', true);
+
+INSERT INTO auth_enabler.user_roles (user_id, role_id)
+SELECT u.id, r.id FROM auth_enabler.users u, auth_enabler.roles r
+WHERE u.email = 'owner@sentiomind.in' AND r.name = 'Super Admin';
+```
+
+`is_first_login = true` forces a password change at first sign-in, so the bootstrap password
+cannot become a standing credential.
+
+Locally you can instead sign up at `http://localhost:3000/signup` — `.env.local.example` sets
+`ENABLE_OPEN_REGISTRATION=true`. That is forbidden in production.
+
+### 9.4 Running the CV / analysis system (optional)
+
+Only needed when you are working on `cv_analysis/`. It pulls in ~4GB of native dependencies.
+
+```powershell
+pip install -r requirements-cv.txt      # on top of requirements.txt
+python -m cv_analysis.app               # CV service alone, on CV_PORT (default 5002)
+python test_db.py                       # auth + CV in one process, on PORT
+```
+
+### 9.5 Running it the way production runs it (Docker)
+
+The `Dockerfile` builds the **auth image only** — it installs `requirements.txt` and never
+`requirements-cv.txt`, and `.dockerignore` keeps `cv_analysis/`, the tests, the media folders and
+every `.env` out of the image. That is what keeps it ~200MB instead of ~4GB, and it means a stray
+`import cv_analysis` fails loudly instead of quietly dragging TensorFlow back in.
 
 ```bash
 cd Backend
+docker build -t b2b-auth .
 
-# combined auth + CV (current topology, unchanged URLs)
-pip install -r requirements.txt -r requirements-cv.txt
-gunicorn -c gunicorn_config.py test_db:app
+# Run it exactly as Cloud Run does: gunicorn on 0.0.0.0:$PORT, config from the environment.
+docker run --rm -p 8080:8080 \
+  -e FLASK_ENV=production \
+  -e SENTIO_DB_URL='postgresql://user:pass@host:5432/sentio_b2b' \
+  -e SENTIO_DB_SSLMODE=require \
+  -e JWT_SECRET_KEY='...' -e MFA_ENCRYPTION_KEY='...' \
+  -e RATELIMIT_STORAGE_URI='rediss://default:TOKEN@host:6379' \
+  -e REDIS_URL='rediss://default:TOKEN@host:6379' \
+  -e ALLOWED_ORIGINS=https://product.sentiomind.in \
+  -e FRONTEND_URL=https://product.sentiomind.in \
+  -e SERVICE_APPLICATIONS=sentio-b2b \
+  -e STRICT_PASSWORD_BREACH_CHECK=true \
+  -e SMTP_HOST=... -e SMTP_PORT=587 -e SMTP_USER=... -e SMTP_PASSWORD=... -e SMTP_FROM=... \
+  b2b-auth
 
-# or split, once you want the CV stack off the auth hosts:
-pip install -r requirements.txt   && gunicorn -c gunicorn_config.py wsgi_auth:app
-pip install -r requirements-cv.txt && gunicorn -c gunicorn_config.py cv_analysis.app:app
+curl -s http://localhost:8080/health
 ```
 
-`PORT` (default 5000 in `gunicorn_config.py`) must match nginx's `upstream auth_api` block. Set
-`FLASK_ENV=production` and fill in `.env` per `.env.example` — `auth/startup_checks.py` will refuse
-to start if `JWT_SECRET_KEY` / `MFA_ENCRYPTION_KEY` / `SESSION_COOKIE_SECURE` / HTTPS settings are
-missing or weak. Set `RATELIMIT_STORAGE_URI=redis://...` so Flask-Limiter limits are shared across
-workers — with the default `memory://` storage each worker enforces limits independently, letting a
-client multiply its effective rate limit by the worker count.
+Use `--env-file .env` only for a throwaway local container. Never bake a `.env` into the image —
+a secret in a layer is readable by anyone who can pull it.
 
-`preload_app` is intentionally `False`: TensorFlow/MediaPipe/dlib initialise native state at import
-time that does not survive `fork()`, so each worker pays the ~15s import cost itself.
+### 9.6 Production
 
-### Tests
+The deployed topology is **Cloud Run + Cloud SQL + Redis**, fully documented in
+[`../DEPLOYMENT_PRODUCTION.md`](../DEPLOYMENT_PRODUCTION.md). That document, not this section, is
+the deployment runbook.
+
+```bash
+gunicorn -c gunicorn_config.py wsgi_auth:app        # auth service (production entry point)
+gunicorn -c gunicorn_config.py cv_analysis.app:app  # CV service, separate host
+gunicorn -c gunicorn_config.py test_db:app          # legacy combined process
+```
+
+Non-negotiables, each enforced at startup — the process **refuses to boot** otherwise:
+
+| Setting | Required in production | Enforced by |
+|---|---|---|
+| `FLASK_ENV` | `production` | `auth/config.py` |
+| `JWT_SECRET_KEY` / `MFA_ENCRYPTION_KEY` | strong, unique, never a dev value | `startup_checks.py` |
+| `SENTIO_DB_URL` | external PostgreSQL, not localhost | `validate_config` |
+| `SENTIO_DB_SSLMODE` | `require` / `verify-ca` / `verify-full` | `validate_config` |
+| `RATELIMIT_STORAGE_URI` | `redis://` or `rediss://` and reachable | `validate_config` + `rate_limiter.py` |
+| `ALLOWED_ORIGINS` | explicit https origins; no `*`, no localhost | `validate_config` |
+| `STRICT_PASSWORD_BREACH_CHECK` | `true` | `validate_config` |
+| `SMTP_PASSWORD` | set | `validate_config` |
+| `PORT` | **do not set it** on Cloud Run — the platform injects 8080 | `gunicorn_config.py` |
+
+Never run `python wsgi_auth.py` or `python test_db.py` in production: Flask's built-in server is
+single-process and not hardened for concurrent untrusted traffic.
+
+`memory://` rate limiting is the subtle one. It is per-process, so each gunicorn worker and each
+Cloud Run instance would keep its own counters and a client could multiply its effective rate
+limit by the worker count. The app rejects it rather than silently under-enforcing.
+
+`preload_app` is intentionally `False`: TensorFlow/MediaPipe/dlib initialise native state at
+import time that does not survive `fork()`, so each worker pays the ~15s import cost itself. Only
+the combined/CV deployments are affected; an auth-only process loads none of it.
+
+### 9.7 Tests
 
 ```powershell
 cd Backend
-pytest
+pip install -r requirements.txt -r requirements-dev.txt
+pytest                       # whole suite
+pytest -q tests/test_authorization.py        # one file
+pytest --cov=auth --cov-report=term-missing  # with coverage
 ```
 
-`tests/conftest.py` builds the app via `create_app(testing=True)` → `create_auth_app(testing=True)`
-— auth/API routes without the analysis stack. The suite is security-focused:
-`test_authorization.py` (scope/IDOR), `test_csrf.py`, `test_jwt_revocation.py`, `test_mfa.py`,
-`test_rate_limiting.py`, `test_refresh_token.py` (rotation + reuse), `test_hibp.py`,
-`test_startup.py` (production guardrails), `test_platform_routes_auth.py` (every CV platform route
-is actually guarded), `test_security_integration.py`, `test_security_audit_fixes.py`,
-`test_auth_security_extras.py`, and `test_service_boundary.py` (the auth service must start with
-no CV library loaded, and `auth/` must never import `cv_analysis`).
+No database is required: `tests/conftest.py` builds the app via `create_app(testing=True)` →
+`create_auth_app(testing=True)` — auth/API routes without the analysis stack, `memory://` limiter,
+no startup checks.
+
+The suite is security-focused: `test_authorization.py` (scope/IDOR), `test_csrf.py`,
+`test_jwt_revocation.py`, `test_mfa.py`, `test_rate_limiting.py`, `test_refresh_token.py`
+(rotation + reuse detection), `test_hibp.py`, `test_startup.py` (production guardrails),
+`test_production_config.py`, `test_mobile_admin_auth.py`, `test_platform_routes_auth.py` (every CV
+platform route is actually guarded), `test_security_integration.py`,
+`test_security_audit_fixes.py`, `test_auth_security_extras.py`, and `test_service_boundary.py`
+(the auth service must start with no CV library loaded, and `auth/` must never import
+`cv_analysis`).
+
+CV-marked tests are opt-in: `SENTIO_RUN_CV_TESTS=1 pytest -m cv`.
+
+**Run `pytest` before every deployment.** `test_service_boundary.py` and `test_startup.py` catch
+exactly the mistakes that only surface as a failed Cloud Run revision otherwise.
+
+### 9.8 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `RuntimeError: ... must be redis://` at startup | `RATELIMIT_STORAGE_URI=memory://` with `FLASK_ENV=production` | point it at Redis |
+| `RuntimeError: Redis unavailable` | Redis unreachable from the runtime | check the URI, VPC connector / Upstash firewall |
+| `validate_config` rejects `ALLOWED_ORIGINS` | wildcard, localhost or non-https origin | list the exact https origin |
+| App starts, every request 500 | PostgreSQL unreachable | `curl /health/ready` — it names the failing dependency |
+| Cloud Run: "container failed to start and listen on the port" | `GUNICORN_BIND_HOST` forced to 127.0.0.1, or `PORT` overridden | leave both unset on Cloud Run |
+| Login works, next request 401 | `JWT_SECRET_KEY` differs between instances/revisions | one secret version everywhere |
+| CORS error from the console | origin missing from `ALLOWED_ORIGINS` | add it, redeploy |
+| Mobile Admin pages return 503 | `MOBILE_ADMIN_JWT_SECRET` unset on the Mobile backend | `DEPLOYMENT_PRODUCTION.md` §15 |
+| `ModuleNotFoundError: cv2` | CV code imported into the auth service | keep the boundary; `pytest tests/test_service_boundary.py` |
+| Rate limits feel N× too loose | `memory://` storage across N workers | shared Redis |
 
 ### Other folders in the repo
 

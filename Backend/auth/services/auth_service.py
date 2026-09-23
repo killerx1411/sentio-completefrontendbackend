@@ -909,7 +909,12 @@ def request_password_reset(email: str, ip_address: str = None):
         )
         conn.commit()
 
-        send_password_reset_email(user["email"], raw_token)
+        if not send_password_reset_email(user["email"], raw_token):
+            logger.error(
+                "Password reset token stored but the email could not be sent "
+                "(user_id=%s). Check SMTP_* configuration.",
+                user["id"],
+            )
         return {"message": "ok"}
     except Exception as e:
         conn.rollback()

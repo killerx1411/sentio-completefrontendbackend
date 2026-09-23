@@ -1126,7 +1126,7 @@ def generate_multi_day_report():
         date_results[f"{data.get('school','')}|{data.get('date','')}"] = data
 
     person_timeline = defaultdict(lambda: {
-        'dates': [], 'wellbeing_scores': [], 'engagement_scores': [],
+        'dates': [], 'schools': [], 'wellbeing_scores': [], 'engagement_scores': [],
         'detections': 0,
         'trait_sums': {k: [] for k in TRAIT_KEYS},
         'gaze_directions': [],
@@ -1152,6 +1152,7 @@ def generate_multi_day_report():
                     gz  = person.get('gaze', {})
                     tl  = person_timeline[pid]
                     tl['dates'].append(date)
+                    tl['schools'].append(school)
                     tl['wellbeing_scores'].append(wb)
                     tl['engagement_scores'].append(person.get('emotion', {}).get('engagement', 50))
                     tl['detections'] += 1
@@ -1200,10 +1201,20 @@ def generate_multi_day_report():
         gaze_counter = Counter(tl['gaze_directions'])
         dominant_gaze = gaze_counter.most_common(1)[0][0] if gaze_counter else 'forward'
 
+        # School comes from the per-date analyses, not person_database:
+        # generate_multi_day_report() is routinely run standalone, where the
+        # in-memory person_database is empty and every profile would otherwise
+        # be written with an empty school, breaking the per-school dashboards.
+        school_counter = Counter(s for s in tl['schools'] if s)
+        person_school = (
+            school_counter.most_common(1)[0][0]
+            if school_counter else pinfo.get('school', '')
+        )
+
         report['person_profiles'][pid] = {
             'person_id':       pid,
             'name':            pinfo.get('name', f'Person {pid}'),
-            'school':          pinfo.get('school', ''),
+            'school':          person_school,
             'profile_image':   pinfo.get('profile_image', _get_blank_b64()),
             'days_present':    days_present,
             'total_detections': tl['detections'],

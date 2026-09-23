@@ -466,12 +466,17 @@ def approve_user(user_id: int, role_id: int, admin_id: int):
 
         cur.execute("SELECT full_name FROM auth_enabler.users WHERE id = %s", (user_id,))
         profile = cur.fetchone()
-        send_credentials_email(
+        if not send_credentials_email(
             user["email"],
             profile["full_name"] if profile else user["email"],
             role_name,
             temp_password,
-        )
+        ):
+            logger.error(
+                "User %s approved but the credentials email could not be sent. "
+                "Check SMTP_* configuration.",
+                user_id,
+            )
 
         log_activity(
             admin_id,

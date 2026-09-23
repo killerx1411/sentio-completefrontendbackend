@@ -541,3 +541,20 @@
   font-size: 0.9rem;
   line-height: 1.6;
 }
+
+/* The signed undertaking, inside the documents card.
+   Set apart with a rule rather than its own card: it belongs with the documents
+   it attests to, and a reviewer reads the two together. */
+.mobile-attestation {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--admin-border, #e2e8f0);
+}
+
+.mobile-attestation .admin-section-title {
+  margin-bottom: 10px;
+}
+
+.mobile-attestation .mobile-doc-actions {
+  margin-top: 12px;
+}

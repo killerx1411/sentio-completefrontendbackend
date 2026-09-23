@@ -55,9 +55,17 @@ def _filter_report_for_user(report: dict, user: User) -> dict:
     out = dict(report)
     out["person_profiles"] = filtered
     if "overall_stats" in out:
+        # The school list is part of the filtered view: a scoped user must not
+        # see the names of schools whose rows were filtered out, and the
+        # dashboards pick their default school from this list.
+        visible_schools = sorted(
+            {p.get("school") for p in filtered.values() if p.get("school")}
+        )
         out["overall_stats"] = {
             **out.get("overall_stats", {}),
             "total_unique_persons": len(filtered),
+            "schools": visible_schools,
+            "total_schools": len(visible_schools),
         }
     return out
 

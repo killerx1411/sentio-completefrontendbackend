@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
+  fetchAttestationDocument,
   fetchExpert,
   setDocumentVerdict,
   setExpertStatus,
@@ -60,16 +61,129 @@ const TRANSITIONS = [
   },
 ];
 
-/** `[field on ExpertDocuments, what the reviewer is looking at, why it matters]` */
-const DOCUMENT_FIELDS = [
+/** The flat columns the API kept before the per-role document matrix.
+ *
+ *  Still rendered, and still the row the verdict is recorded against, but they
+ *  are now a mirror: `documents.links` is the actual submission. Shown under a
+ *  separate heading so a reviewer is not left comparing two lists that describe
+ *  the same three files. */
+const LEGACY_DOCUMENT_FIELDS = [
   ["government_id_url", "Government ID", "Identity"],
   ["degree_certificate_url", "Degree certificate", "Qualification"],
   ["license_certificate_url", "License certificate", "Licensure"],
   ["experience_certificate_url", "Experience certificate", "Experience"],
 ];
 
+/** How each requirement flag reads to a reviewer.
+ *
+ *  The flag stored on a link is the rule that applied when it was collected, not
+ *  the rule today — so a document collected as optional still reads as optional
+ *  after the matrix changes. */
+const REQUIREMENT_LABEL = {
+  required: "Required",
+  one_of: "Required (either one)",
+  optional: "Optional",
+};
+
+const GOVERNMENT_ID_TYPE_LABEL = {
+  aadhaar: "Aadhaar",
+  driving_licence: "Driving Licence",
+  passport: "Passport",
+  voter_id: "Voter ID",
+};
+
 /** The audit action the Mobile backend writes for a document verdict. */
 const DOCUMENT_VERDICT_ACTION = "expert.document_verdict";
+
+/** The expert's signed undertaking.
+ *
+ *  Signing is what the platform relies on: nothing an expert submitted is
+ *  independently verified, so the signature is the whole record of them having
+ *  claimed it. An unsigned application is flagged here as well as on the
+ *  checklist, because this is the panel a reviewer is actually looking at when
+ *  they decide.
+ *
+ *  Both timestamps are shown. They are usually the same second — the server
+ *  writes them in one transaction — but they answer different questions, and
+ *  collapsing them into one would quietly discard the authentication record. */
+function AttestationPanel({ userId, attestation }) {
+  const [downloading, setDownloading] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function download() {
+    setDownloading(true);
+    setError(null);
+    try {
+      const blob = await fetchAttestationDocument(userId);
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `undertaking-${userId}.pdf`;
+      anchor.click();
+      // Revoked on the next tick: Chrome needs the URL to survive the click,
+      // and leaving it alive leaks the blob for the life of the document.
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (e) {
+      setError(e.message || "Could not download the signed undertaking.");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  const signed = Boolean(attestation?.attestation_signed_at);
+
+  return (
+    <div className="mobile-attestation">
+      <h4 className="admin-section-title">Self-attestation</h4>
+
+      {!signed ? (
+        <p className="mobile-muted">
+          Not signed. The expert has not executed the undertaking, so nothing they
+          submitted has been attested to.
+        </p>
+      ) : (
+        <>
+          <div className="mobile-summary">
+            <span className="mobile-status ok">Signed</span>
+            <span className="mobile-muted">
+              Version {attestation.attestation_version || DASH}
+            </span>
+          </div>
+
+          <div className="mobile-fields one-col">
+            <Field label="Signed by">{attestation.full_legal_name}</Field>
+            <Field label="Signed at">
+              {formatDateTime(attestation.attestation_signed_at)}
+            </Field>
+            <Field label="Code verified at">
+              {formatDateTime(attestation.otp_verified_at)}
+            </Field>
+            <Field label="Signed from">{attestation.signed_ip}</Field>
+          </div>
+
+          <div className="mobile-doc-actions">
+            {attestation.document_url ? (
+              <button
+                type="button"
+                className="admin-button secondary"
+                onClick={download}
+                disabled={downloading}
+              >
+                {downloading ? "Preparing…" : "Download signed copy"}
+              </button>
+            ) : (
+              <span className="mobile-muted">
+                Signed copy not stored yet — the signature itself is recorded.
+              </span>
+            )}
+          </div>
+
+          {error && <p className="mobile-status warn">{error}</p>}
+        </>
+      )}
+    </div>
+  );
+}
 
 function Field({ label, children }) {
   return (
@@ -243,6 +357,7 @@ export default function MobileExpertDetail() {
     user,
     profile,
     documents,
+    attestation,
     questionnaire,
     checklist,
     allowed_transitions: allowedTransitions = [],
@@ -256,9 +371,12 @@ export default function MobileExpertDetail() {
     (t) => allowedTransitions.includes(t.status) && can(t.capability)
   );
 
-  const providedDocuments = documents
-    ? DOCUMENT_FIELDS.filter(([key]) => Boolean(documents[key])).length
-    : 0;
+  const documentLinks = documents?.links ?? [];
+  const missingMandatory = documents?.missing_mandatory ?? [];
+
+  // Counted over the per-role set, not the four legacy columns: "3 of 4" was
+  // always the wrong denominator once a Counsellor owed six documents.
+  const providedDocuments = documentLinks.length;
 
   // Why the documents were turned down: the remarks stored on the row, falling
   // back to the reason on the most recent verdict in the audit log. Only shown
@@ -391,8 +509,14 @@ export default function MobileExpertDetail() {
                       : "No verdict recorded yet"}
                   </span>
                   <span className="mobile-muted">
-                    {providedDocuments} of {DOCUMENT_FIELDS.length} submitted
+                    {providedDocuments} link{providedDocuments === 1 ? "" : "s"} submitted
                   </span>
+                  {missingMandatory.length > 0 && (
+                    <span className="mobile-status warn">
+                      {missingMandatory.length} required document
+                      {missingMandatory.length === 1 ? "" : "s"} missing
+                    </span>
+                  )}
                 </div>
 
                 {rejectionReason && (
@@ -408,8 +532,69 @@ export default function MobileExpertDetail() {
                   console.
                 </p>
 
+                {profile?.practitioner_role_label && (
+                  <p className="mobile-muted mobile-doc-note">
+                    Document set for <strong>{profile.practitioner_role_label}</strong>.
+                    Which documents are required depends on the role the expert
+                    selected.
+                  </p>
+                )}
+
+                {documentLinks.length > 0 && (
+                  <ul className="mobile-doc-list">
+                    {documentLinks.map((link) => (
+                      <li
+                        key={`${link.document_type}-${link.position}`}
+                        className="mobile-doc"
+                      >
+                        <div className="mobile-doc-head">
+                          <span className="mobile-doc-name">{link.label}</span>
+                          <span className="mobile-doc-category">
+                            {REQUIREMENT_LABEL[link.requirement] || link.requirement}
+                          </span>
+                          <span className="mobile-status ok">Submitted</span>
+                        </div>
+                        <div className="mobile-doc-meta">
+                          {link.document_type === "government_id" &&
+                            documents.government_id_type && (
+                              <Field label="ID type">
+                                {GOVERNMENT_ID_TYPE_LABEL[
+                                  documents.government_id_type
+                                ] || documents.government_id_type}
+                              </Field>
+                            )}
+                          <Field label="Attached">
+                            {formatDateTime(link.created_at)}
+                          </Field>
+                          <Field label="Last updated">
+                            {formatDateTime(link.updated_at)}
+                          </Field>
+                        </div>
+                        <div className="mobile-doc-actions">
+                          <SafeLink url={link.link_url} label="Preview / download" />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {missingMandatory.length > 0 && (
+                  <div className="mobile-rejection">
+                    <span className="mobile-field-label">
+                      Required documents not submitted
+                    </span>
+                    <p>{missingMandatory.map(humanize).join(", ")}</p>
+                  </div>
+                )}
+
+                <h4 className="admin-section-title">Legacy columns</h4>
+                <p className="mobile-muted mobile-doc-note">
+                  The three fields the API kept before the per-role set. They mirror
+                  the links above; the verdict below is recorded against this row.
+                </p>
+
                 <ul className="mobile-doc-list">
-                  {DOCUMENT_FIELDS.map(([key, label, category]) => {
+                  {LEGACY_DOCUMENT_FIELDS.map(([key, label, category]) => {
                     const url = documents[key];
                     return (
                       <li key={key} className={`mobile-doc${url ? "" : " missing"}`}>
@@ -454,6 +639,8 @@ export default function MobileExpertDetail() {
                     <Field label="Remarks">{documents.remarks}</Field>
                   </div>
                 )}
+
+                <AttestationPanel userId={user.id} attestation={attestation} />
 
                 {can("documents.record_verdict") && (
                   <div className="mobile-actions">
@@ -513,6 +700,12 @@ export default function MobileExpertDetail() {
               </p>
             ) : (
               <div className="mobile-fields one-col">
+                <Field label="Practitioner role">
+                  {profile.practitioner_role_label ||
+                    (profile.practitioner_role
+                      ? humanize(profile.practitioner_role)
+                      : null)}
+                </Field>
                 <Field label="Professional category">
                   {profile.professional_category}
                 </Field>

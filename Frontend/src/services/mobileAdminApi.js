@@ -138,6 +138,45 @@ export function setExpertStatus(userId, status, reason) {
   });
 }
 
+/** Downloads an expert's signed undertaking as a Blob.
+ *
+ *  Not a plain <a href>: the Mobile backend authorises from the bearer token
+ *  this module holds in memory, and a browser navigation would send no token at
+ *  all. Served under `mobile.users.read` by the admin API rather than by the
+ *  expert-facing attachment route, which authorises only the file's owner and
+ *  their chat counterparty.
+ *
+ *  Retries once through the authority on a 401, the same way `request` does. */
+export async function fetchAttestationDocument(userId, allowRetry = true) {
+  const token = getAccessToken();
+  const headers = new Headers();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  const response = await fetch(
+    buildUrl(`/experts/${userId}/attestation/document`),
+    { method: "GET", headers }
+  );
+
+  if (response.status === 401 && allowRetry && token) {
+    try {
+      await refreshSession();
+    } catch {
+      setAccessToken(null);
+      throw new MobileAdminError("Your session expired.", 401);
+    }
+    return fetchAttestationDocument(userId, false);
+  }
+
+  if (!response.ok) {
+    // The error body is JSON even though the success body is a PDF.
+    const payload = await response.json().catch(() => null);
+    const [message, code] = messageFrom(payload, response);
+    throw new MobileAdminError(message, response.status, code);
+  }
+
+  return response.blob();
+}
+
 export function setDocumentVerdict(userId, status, remarks) {
   return request(`/experts/${userId}/documents/status`, {
     method: "POST",

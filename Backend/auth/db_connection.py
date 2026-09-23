@@ -31,6 +31,30 @@ def _connection_kwargs() -> dict:
     }
 
 
+def _pool_size(env_var: str, default: int) -> int:
+    """Read a pool bound from the environment, falling back on bad input.
+
+    Pool size is per *worker process*: gunicorn_config.py sets
+    preload_app = False, so every gunicorn worker builds its own pool and the
+    connections a single Cloud Run instance holds is workers x maxconn. On a
+    small Cloud SQL tier (db-f1-micro caps max_connections near 25) the
+    defaults below can exhaust the server during a revision rollout, when the
+    old and new revisions overlap. Shrink them there rather than editing code.
+    """
+    raw = os.environ.get(env_var, "").strip()
+    if not raw:
+        return default
+    try:
+        value = int(raw)
+    except ValueError:
+        logger.warning("%s=%r is not an integer; using %d", env_var, raw, default)
+        return default
+    if value < 1:
+        logger.warning("%s=%d must be >= 1; using %d", env_var, value, default)
+        return default
+    return value
+
+
 def _get_pool() -> pool.ThreadedConnectionPool:
     global _POOL
     if _POOL is None:
@@ -38,9 +62,22 @@ def _get_pool() -> pool.ThreadedConnectionPool:
             raise RuntimeError(
                 "SENTIO_DB_URL environment variable is not set."
             )
+        maxconn = _pool_size("SENTIO_DB_POOL_MAX", 10)
+        minconn = _pool_size("SENTIO_DB_POOL_MIN", 2)
+        if minconn > maxconn:
+            # psycopg2 opens minconn connections eagerly and then refuses to
+            # take them back, so an inverted pair fails on the first request
+            # rather than at startup. Clamp instead.
+            logger.warning(
+                "SENTIO_DB_POOL_MIN=%d exceeds SENTIO_DB_POOL_MAX=%d; using %d",
+                minconn,
+                maxconn,
+                maxconn,
+            )
+            minconn = maxconn
         _POOL = pool.ThreadedConnectionPool(
-            minconn=2,
-            maxconn=10,
+            minconn=minconn,
+            maxconn=maxconn,
             dsn=_DB_URL,
             **_connection_kwargs(),
         )
